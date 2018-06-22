@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 22 June 2018 at 5:01:03 pm'!
-'Description a description for this package'!
-!provides: 'FEN' 1 2!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 22 June 2018 at 7:37:49 pm'!
+'Description Extract position records from a file and write an individual *.fen file for each group of records.'!
+!provides: 'FEN' 1 3!
 SystemOrganization addCategory: #FEN!
 
 
