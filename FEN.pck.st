@@ -1,12 +1,12 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 23 June 2018 at 12:03:12 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 23 June 2018 at 12:57:50 pm'!
 'Description Extract position records from a file and write an individual *.fen file for each group of records.'!
-!provides: 'FEN' 1 8!
+!provides: 'FEN' 1 9!
 SystemOrganization addCategory: #FEN!
 
 
 !classDefinition: #InFen category: #FEN!
 Object subclass: #InFen
-	instanceVariableNames: 'directory file ser'
+	instanceVariableNames: 'directory file ser total'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'FEN'!
@@ -92,22 +92,29 @@ ser: anObject
 	
 	ser _ anObject! !
 
-!InFen methodsFor: 'checklist' stamp: 'dhn 6/22/2018 22:00:18'!
-list: aNum
-	"Answer a checklist of file serial numbers, in columns aNum long"
-	| cols arr ix mbrs |
+!InFen methodsFor: 'accessing' stamp: 'dhn 6/23/2018 12:26:47'!
+total: anObject
+	"Set the value of total to anObject"
+	
+	total _ anObject! !
 
-	cols _ ((ser - 1) / aNum) ceiling.
+!InFen methodsFor: 'checklist' stamp: 'dhn 6/23/2018 12:53:52'!
+checkList
+	"Answer a checklist of file serial numbers, in columns aNum long"
+	| depth cols arr ix mbrs |
+
+	depth _ self class columnDepth.
+	cols _ (total / depth) ceiling.
 	arr _ Array new: cols.
 	ix _ (0 to: cols -1) asArray.
-	mbrs _ (1 to: aNum) asArray.
+	mbrs _ (1 to: depth) asArray.
 	1 to: cols do: [:n | | delta |
-		delta _ aNum * (ix at: n).
+		delta _ depth * (ix at: n).
 		arr at: n put: (mbrs collect: [:a | a + delta])].
-	^ String streamContents: [:string |
-		1 to: aNum do: [:row |
+	(file, '.ckl') asFileEntry forceWriteStreamDo: [:string |
+		1 to: depth do: [:row |
 			1 to: cols do: [:col |
-				(col > 1) ifTrue: [string nextPutAll: '        '].
+				string nextPutAll: self class columnSpacer.
 				((arr at: col) at: row) printOn: string length: 3 zeroPadded: true].
 			string newLine]]
 ! !
@@ -118,9 +125,21 @@ take: aNum
 	
 	^ self copyFrom: 1 to: (aNum min: self size)! !
 
-!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 11:57:33'!
+!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 12:10:28'!
+columnDepth
+	"Answer the column length for the checklist"
+	
+	^ 60! !
+
+!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 12:38:24'!
+columnSpacer
+	"Answer the space between columns for the checklist"
+	
+	^ '        '! !
+
+!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 12:08:26'!
 new: aString
-	"Establish an instance of this class, initialized with the name of a relative path/file named aString.
+	"Answer an instance of this class, initialized with the name of a relative path/file named aString.
 	Example:
 	
 		(InFen new: 'chess/m8n/m8n2.txt') write.
@@ -129,6 +148,21 @@ new: aString
 	
 	inst _ self setup.
 	inst file: aString.  "relative: where input and output will be"
+	^ inst! !
+
+!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 12:46:06'!
+new: aString for: aNum
+	"Answer an instance of this class, initialized with the name of a relative path/file named aString.
+	Example:
+	
+		(InFen new: 'chess/m8n/m8n2' for: 221) checkList.
+	"
+	| inst |
+	
+	inst _ self setup.
+	inst file: aString.  "relative: where input and output will be"
+
+	inst total: aNum.
 	^ inst! !
 
 !InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 11:55:15'!
