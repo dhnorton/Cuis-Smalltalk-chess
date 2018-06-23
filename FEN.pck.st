@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 23 June 2018 at 12:57:50 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 23 June 2018 at 1:13:25 pm'!
 'Description Extract position records from a file and write an individual *.fen file for each group of records.'!
-!provides: 'FEN' 1 9!
+!provides: 'FEN' 1 10!
 SystemOrganization addCategory: #FEN!
 
 
@@ -98,7 +98,7 @@ total: anObject
 	
 	total _ anObject! !
 
-!InFen methodsFor: 'checklist' stamp: 'dhn 6/23/2018 12:53:52'!
+!InFen methodsFor: 'checklist' stamp: 'dhn 6/23/2018 13:08:17'!
 checkList
 	"Answer a checklist of file serial numbers, in columns aNum long"
 	| depth cols arr ix mbrs |
@@ -112,6 +112,7 @@ checkList
 		delta _ depth * (ix at: n).
 		arr at: n put: (mbrs collect: [:a | a + delta])].
 	(file, '.ckl') asFileEntry forceWriteStreamDo: [:string |
+		string nextPutAll: (file, '.ckl'); newLine; newLine.
 		1 to: depth do: [:row |
 			1 to: cols do: [:col |
 				string nextPutAll: self class columnSpacer.
@@ -131,11 +132,11 @@ columnDepth
 	
 	^ 60! !
 
-!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 12:38:24'!
+!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 13:12:02'!
 columnSpacer
 	"Answer the space between columns for the checklist"
 	
-	^ '        '! !
+	^ '    '! !
 
 !InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 12:08:26'!
 new: aString
