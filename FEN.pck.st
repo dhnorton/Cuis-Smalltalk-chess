@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 22 June 2018 at 7:37:49 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 22 June 2018 at 10:24:46 pm'!
 'Description Extract position records from a file and write an individual *.fen file for each group of records.'!
-!provides: 'FEN' 1 3!
+!provides: 'FEN' 1 6!
 SystemOrganization addCategory: #FEN!
 
 
@@ -47,11 +47,12 @@ outNameFor: base
 		ser printOn: str length: 3 zeroPadded: true.
 		str nextPutAll: '.fen']! !
 
-!InFen methodsFor: 'I/O' stamp: 'dhn 6/22/2018 17:00:18'!
+!InFen methodsFor: 'I/O' stamp: 'dhn 6/22/2018 22:23:58'!
 write
 	"Write a *fen file for each group of position records"
-	| outName ios line col nr ostr |
+	| base outName ios line col nr ostr checks |
 
+	base _ self baseName.
 	ser _ 0.
 	col _ OrderedCollection new.
 	ios _ ReadStream on: (directory / inFile) asString asFileEntry fileContents.
@@ -62,7 +63,7 @@ write
 			nr _ (line select: [:a | a = $/]) size.
 			(nr = 7)
 				ifTrue: [
-					outName _ self outNameFor: self baseName.
+					outName _ self outNameFor: base.
 					outName asFileEntry 	forceWriteStreamDo: [ :out | out nextPutAll: line; newLine]]
 				ifFalse: [col add: line].
 			line _ ios nextLine].
@@ -71,7 +72,9 @@ write
 					ostr _ String new writeStream.
 					col do: [:n | ostr nextPutAll: n; newLine].
 					outName asFileEntry appendContents: ostr contents.
-					col _ OrderedCollection new]]! !
+					col _ OrderedCollection new]].
+	checks _ self list: 60.
+	(base, '.ckl') asFileEntry fileContents: checks! !
 
 !InFen methodsFor: 'accessing' stamp: 'dhn 6/18/2018 22:03:03'!
 directory: anObject
@@ -84,6 +87,32 @@ inFile: anObject
 	"Set the value of inFile to anObject"
 	
 	inFile _ anObject! !
+
+!InFen methodsFor: 'checklist' stamp: 'dhn 6/22/2018 22:00:18'!
+list: aNum
+	"Answer a checklist of file serial numbers, in columns aNum long"
+	| cols arr ix mbrs |
+
+	cols _ ((ser - 1) / aNum) ceiling.
+	arr _ Array new: cols.
+	ix _ (0 to: cols -1) asArray.
+	mbrs _ (1 to: aNum) asArray.
+	1 to: cols do: [:n | | delta |
+		delta _ aNum * (ix at: n).
+		arr at: n put: (mbrs collect: [:a | a + delta])].
+	^ String streamContents: [:string |
+		1 to: aNum do: [:row |
+			1 to: cols do: [:col |
+				(col > 1) ifTrue: [string nextPutAll: '        '].
+				((arr at: col) at: row) printOn: string length: 3 zeroPadded: true].
+			string newLine]]
+! !
+
+!InFen methodsFor: 'checklist' stamp: 'dhn 6/22/2018 19:56:12'!
+take: aNum
+	"Answer the first aNum members of the receiver"
+	
+	^ self copyFrom: 1 to: (aNum min: self size)! !
 
 !InFen class methodsFor: 'instance creation' stamp: 'dhn 6/22/2018 16:56:48'!
 new: aString
