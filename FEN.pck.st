@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 23 June 2018 at 11:36:22 am'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 23 June 2018 at 12:03:12 pm'!
 'Description Extract position records from a file and write an individual *.fen file for each group of records.'!
-!provides: 'FEN' 1 7!
+!provides: 'FEN' 1 8!
 SystemOrganization addCategory: #FEN!
 
 
@@ -47,10 +47,10 @@ outNameFor: base
 		ser printOn: str length: 3 zeroPadded: true.
 		str nextPutAll: '.fen']! !
 
-!InFen methodsFor: 'I/O' stamp: 'dhn 6/23/2018 11:30:20'!
+!InFen methodsFor: 'I/O' stamp: 'dhn 6/23/2018 12:00:04'!
 write
 	"Write a *fen file for each group of position records"
-	| base outName ios line col nr ostr checks |
+	| base outName ios line col nr ostr |
 
 	base _ self baseName.
 	ser _ 0.
@@ -72,9 +72,7 @@ write
 					ostr _ String new writeStream.
 					col do: [:n | ostr nextPutAll: n; newLine].
 					outName asFileEntry appendContents: ostr contents.
-					col _ OrderedCollection new]].
-	checks _ self list: 60.
-	(base, '.ckl') asFileEntry fileContents: checks! !
+					col _ OrderedCollection new]]! !
 
 !InFen methodsFor: 'accessing' stamp: 'dhn 6/18/2018 22:03:03'!
 directory: anObject
@@ -87,12 +85,6 @@ file: anObject
 	"Set the value of file to anObject"
 	
 	file _ anObject! !
-
-!InFen methodsFor: 'accessing' stamp: 'dhn 6/18/2018 21:51:35'!
-inFile: anObject
-	"Set the value of inFile to anObject"
-	
-	inFile _ anObject! !
 
 !InFen methodsFor: 'accessing' stamp: 'dhn 6/23/2018 11:27:12'!
 ser: anObject
@@ -126,17 +118,25 @@ take: aNum
 	
 	^ self copyFrom: 1 to: (aNum min: self size)! !
 
-!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 11:32:11'!
+!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 11:57:33'!
 new: aString
 	"Establish an instance of this class, initialized with the name of a relative path/file named aString.
 	Example:
 	
 		(InFen new: 'chess/m8n/m8n2.txt') write.
 	"
+	| inst |
+	
+	inst _ self setup.
+	inst file: aString.  "relative: where input and output will be"
+	^ inst! !
+
+!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 11:55:15'!
+setup
+	"Establish an instance of this class"
 	| x |
 	
 	x _ self new.
-	x file: aString.  "relative: where input and output will be"
 	DirectoryEntry roots.  "take no chances: ensure the base directory is '/' "
 	x directory: DirectoryEntry currentDirectory.  "now at /home/<user>"
 	^ x! !
