@@ -1,12 +1,12 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 22 June 2018 at 10:24:46 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 23 June 2018 at 11:36:22 am'!
 'Description Extract position records from a file and write an individual *.fen file for each group of records.'!
-!provides: 'FEN' 1 6!
+!provides: 'FEN' 1 7!
 SystemOrganization addCategory: #FEN!
 
 
 !classDefinition: #InFen category: #FEN!
 Object subclass: #InFen
-	instanceVariableNames: 'directory inFile ser'
+	instanceVariableNames: 'directory file ser'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'FEN'!
@@ -22,15 +22,15 @@ Extract position records from a file and write an individual *.fen file for each
 (InFen new: 'chess/m8n/m8n2.txt') write.
 "!
 
-!InFen methodsFor: 'I/O' stamp: 'dhn 6/19/2018 20:34:12'!
+!InFen methodsFor: 'I/O' stamp: 'dhn 6/23/2018 11:31:04'!
 baseName
 	"Answer the base name for output files"
 	| dot |
 	
-	dot _ inFile indexOf: $. ifAbsent: [].
+	dot _ file indexOf: $. ifAbsent: [].
 	^ (FillInTheBlankMorph
 		request: 'Base name for output files?'
-		initialAnswer: (inFile copyFrom: 1 to: dot - 1)
+		initialAnswer: (file copyFrom: 1 to: dot - 1)
 		centerAt: Display center
 		onCancelReturn: ''
 		acceptOnCR: true)! !
@@ -47,7 +47,7 @@ outNameFor: base
 		ser printOn: str length: 3 zeroPadded: true.
 		str nextPutAll: '.fen']! !
 
-!InFen methodsFor: 'I/O' stamp: 'dhn 6/22/2018 22:23:58'!
+!InFen methodsFor: 'I/O' stamp: 'dhn 6/23/2018 11:30:20'!
 write
 	"Write a *fen file for each group of position records"
 	| base outName ios line col nr ostr checks |
@@ -55,7 +55,7 @@ write
 	base _ self baseName.
 	ser _ 0.
 	col _ OrderedCollection new.
-	ios _ ReadStream on: (directory / inFile) asString asFileEntry fileContents.
+	ios _ ReadStream on: (directory / file) asString asFileEntry fileContents.
 	line _ ''.
 	[line isNil ] whileFalse: [
 		line _ ios nextLine.
@@ -82,11 +82,23 @@ directory: anObject
 	
 	directory _ anObject! !
 
+!InFen methodsFor: 'accessing' stamp: 'dhn 6/23/2018 11:31:39'!
+file: anObject
+	"Set the value of file to anObject"
+	
+	file _ anObject! !
+
 !InFen methodsFor: 'accessing' stamp: 'dhn 6/18/2018 21:51:35'!
 inFile: anObject
 	"Set the value of inFile to anObject"
 	
 	inFile _ anObject! !
+
+!InFen methodsFor: 'accessing' stamp: 'dhn 6/23/2018 11:27:12'!
+ser: anObject
+	"Set the value of ser to anObject"
+	
+	ser _ anObject! !
 
 !InFen methodsFor: 'checklist' stamp: 'dhn 6/22/2018 22:00:18'!
 list: aNum
@@ -114,7 +126,7 @@ take: aNum
 	
 	^ self copyFrom: 1 to: (aNum min: self size)! !
 
-!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/22/2018 16:56:48'!
+!InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 11:32:11'!
 new: aString
 	"Establish an instance of this class, initialized with the name of a relative path/file named aString.
 	Example:
@@ -124,7 +136,7 @@ new: aString
 	| x |
 	
 	x _ self new.
-	x inFile: aString.  "relative: where input and output will be"
+	x file: aString.  "relative: where input and output will be"
 	DirectoryEntry roots.  "take no chances: ensure the base directory is '/' "
 	x directory: DirectoryEntry currentDirectory.  "now at /home/<user>"
 	^ x! !
