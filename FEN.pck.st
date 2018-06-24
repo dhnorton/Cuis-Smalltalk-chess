@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 23 June 2018 at 1:13:25 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 24 June 2018 at 12:04:09 pm'!
 'Description Extract position records from a file and write an individual *.fen file for each group of records.'!
-!provides: 'FEN' 1 10!
+!provides: 'FEN' 1 11!
 SystemOrganization addCategory: #FEN!
 
 
@@ -98,10 +98,10 @@ total: anObject
 	
 	total _ anObject! !
 
-!InFen methodsFor: 'checklist' stamp: 'dhn 6/23/2018 13:08:17'!
+!InFen methodsFor: 'checklist' stamp: 'dhn 6/24/2018 12:03:35'!
 checkList
-	"Answer a checklist of file serial numbers, in columns aNum long"
-	| depth cols arr ix mbrs |
+	"Answer a checklist of file serial numbers, in columns 'self class columnDepth' long"
+	| depth cols arr ix mbrs part1 part2 element |
 
 	depth _ self class columnDepth.
 	cols _ (total / depth) ceiling.
@@ -111,20 +111,29 @@ checkList
 	1 to: cols do: [:n | | delta |
 		delta _ depth * (ix at: n).
 		arr at: n put: (mbrs collect: [:a | a + delta])].
+	
+	part1 _ arr last select: [:n | n <= total].
+	part2 _ #().
+	depth - part1 size timesRepeat: [part2 _ part2, {self columnPad}].
+	arr at: arr size put: part1, part2.
+	
 	(file, '.ckl') asFileEntry forceWriteStreamDo: [:string |
 		string nextPutAll: (file, '.ckl'); newLine; newLine.
 		1 to: depth do: [:row |
 			1 to: cols do: [:col |
 				string nextPutAll: self class columnSpacer.
-				((arr at: col) at: row) printOn: string length: 3 zeroPadded: true].
+				(element _ (arr at: col) at: row) isNumber
+					ifTrue: [element printOn: string length: self columnPad size zeroPadded: true]
+					ifFalse: [string nextPutAll: element]].
 			string newLine]]
 ! !
 
-!InFen methodsFor: 'checklist' stamp: 'dhn 6/22/2018 19:56:12'!
-take: aNum
-	"Answer the first aNum members of the receiver"
+!InFen methodsFor: 'checklist' stamp: 'dhn 6/24/2018 11:59:57'!
+columnPad
+	"Answer the replacement for numbers > total in the last column"
+	"The receiver's size will determine the length of every column element"
 	
-	^ self copyFrom: 1 to: (aNum min: self size)! !
+	^ '   '! !
 
 !InFen class methodsFor: 'instance creation' stamp: 'dhn 6/23/2018 12:10:28'!
 columnDepth
