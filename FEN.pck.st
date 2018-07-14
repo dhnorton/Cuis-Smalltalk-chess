@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 24 June 2018 at 12:04:09 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 14 July 2018 at 6:28:19 pm'!
 'Description Extract position records from a file and write an individual *.fen file for each group of records.'!
-!provides: 'FEN' 1 11!
+!provides: 'FEN' 1 12!
 SystemOrganization addCategory: #FEN!
 
 
@@ -14,6 +14,16 @@ Object subclass: #InFen
 InFen class
 	instanceVariableNames: ''!
 
+!classDefinition: #Progress category: #FEN!
+Object subclass: #Progress
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Progress class' category: #FEN!
+Progress class
+	instanceVariableNames: ''!
+
 
 !InFen commentStamp: 'dhn 6/19/2018 17:24:41' prior: 0!
 Extract position records from a file and write an individual *.fen file for each group of records. The file is compatible with Xboard in that the first record defines the position of the pieces. The remaining records from the group follow in their original sequence.
@@ -21,6 +31,20 @@ Extract position records from a file and write an individual *.fen file for each
 "
 (InFen new: 'chess/m8n/m8n2.txt') write.
 "!
+
+!Progress commentStamp: 'dhn 7/14/2018 18:27:08' prior: 0!
+Compute percentage (as a decimal) of a series of win-loss pairs, as x / (x + y).
+
+Run the following, as an example:
+
+Progress new percent:  #(
+1 0
+1 1
+2 1
+2 2
+3 2
+).
+!
 
 !InFen methodsFor: 'I/O' stamp: 'dhn 6/23/2018 11:31:04'!
 baseName
@@ -184,3 +208,25 @@ setup
 	DirectoryEntry roots.  "take no chances: ensure the base directory is '/' "
 	x directory: DirectoryEntry currentDirectory.  "now at /home/<user>"
 	^ x! !
+
+!Progress methodsFor: 'operating' stamp: 'dhn 7/13/2018 19:43:12'!
+percent: arr
+	"Answer the 'percent' progression, computed from pairs of points in array arr"
+	| odd even col ix |
+	
+	col _ OrderedCollection new.
+	ix _ 0.
+	arr do: [:ea |
+		ix _ ix + 1.
+		ix even
+			ifTrue: [
+				even _ ea.
+				col addLast: (odd / (odd + even))]
+			ifFalse: [odd _ ea].
+		].
+	^ String streamContents: [ :str |
+		col do: [:p | 
+			str 
+				nextPutAll: (p printStringFractionDigits: 2);
+				nextPut: $ ]
+		]! !
