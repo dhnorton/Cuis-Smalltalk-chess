@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 14 July 2018 at 6:28:19 pm'!
-'Description Extract position records from a file and write an individual *.fen file for each group of records.'!
-!provides: 'FEN' 1 12!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 20 July 2018 at 10:25:50 pm'!
+'Description Utilities for studying chess.'!
+!provides: 'FEN' 1 20!
 SystemOrganization addCategory: #FEN!
 
 
@@ -12,6 +12,76 @@ Object subclass: #InFen
 	category: 'FEN'!
 !classDefinition: 'InFen class' category: #FEN!
 InFen class
+	instanceVariableNames: ''!
+
+!classDefinition: #Piece category: #FEN!
+Object subclass: #Piece
+	instanceVariableNames: 'position color dots'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Piece class' category: #FEN!
+Piece class
+	instanceVariableNames: ''!
+
+!classDefinition: #Bishop category: #FEN!
+Piece subclass: #Bishop
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Bishop class' category: #FEN!
+Bishop class
+	instanceVariableNames: ''!
+
+!classDefinition: #King category: #FEN!
+Piece subclass: #King
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'King class' category: #FEN!
+King class
+	instanceVariableNames: ''!
+
+!classDefinition: #Knight category: #FEN!
+Piece subclass: #Knight
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Knight class' category: #FEN!
+Knight class
+	instanceVariableNames: ''!
+
+!classDefinition: #Pawn category: #FEN!
+Piece subclass: #Pawn
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Pawn class' category: #FEN!
+Pawn class
+	instanceVariableNames: ''!
+
+!classDefinition: #Queen category: #FEN!
+Piece subclass: #Queen
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Queen class' category: #FEN!
+Queen class
+	instanceVariableNames: ''!
+
+!classDefinition: #Rook category: #FEN!
+Piece subclass: #Rook
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Rook class' category: #FEN!
+Rook class
 	instanceVariableNames: ''!
 
 !classDefinition: #Progress category: #FEN!
@@ -31,6 +101,27 @@ Extract position records from a file and write an individual *.fen file for each
 "
 (InFen new: 'chess/m8n/m8n2.txt') write.
 "!
+
+!Piece commentStamp: '<historical>' prior: 0!
+A chess piece.!
+
+!Bishop commentStamp: '<historical>' prior: 0!
+The bishop piece.!
+
+!King commentStamp: '<historical>' prior: 0!
+The king piece.!
+
+!Knight commentStamp: '<historical>' prior: 0!
+The knight piece.!
+
+!Pawn commentStamp: '<historical>' prior: 0!
+The pawn piece.!
+
+!Queen commentStamp: '<historical>' prior: 0!
+The queen piece.!
+
+!Rook commentStamp: '<historical>' prior: 0!
+The rook piece.!
 
 !Progress commentStamp: 'dhn 7/14/2018 18:27:08' prior: 0!
 Compute percentage (as a decimal) of a series of win-loss pairs, as x / (x + y).
@@ -208,6 +299,171 @@ setup
 	DirectoryEntry roots.  "take no chances: ensure the base directory is '/' "
 	x directory: DirectoryEntry currentDirectory.  "now at /home/<user>"
 	^ x! !
+
+!Piece methodsFor: 'accessing' stamp: 'dhn 7/20/2018 17:43:56'!
+color
+	"Answer the value of color"
+
+	^ color! !
+
+!Piece methodsFor: 'accessing' stamp: 'dhn 7/20/2018 17:43:56'!
+color: anObject
+	"Set the value of color"
+
+	color _ anObject! !
+
+!Piece methodsFor: 'accessing' stamp: 'dhn 7/20/2018 17:43:56'!
+position
+	"Answer the value of position"
+
+	^ position! !
+
+!Piece methodsFor: 'accessing' stamp: 'dhn 7/20/2018 17:43:56'!
+position: anObject
+	"Set the value of position"
+
+	position _ anObject! !
+
+!Piece methodsFor: 'accessing' stamp: 'dhn 7/20/2018 18:12:07'!
+rank
+	"Answer the rank (row) of the current position"
+	
+	^ position y! !
+
+!Piece methodsFor: 'operating' stamp: 'dhn 7/20/2018 18:42:07'!
+threat
+	"Answer the positions threatened, relative to current position"
+	
+	^ self scope
+! !
+
+!Piece methodsFor: 'testing' stamp: 'dhn 7/20/2018 21:51:44'!
+clean
+	"Remove the dots"
+	
+	dots do: [:ea | ea delete]! !
+
+!Piece methodsFor: 'testing' stamp: 'dhn 7/20/2018 22:23:11'!
+view
+	"Show the scope as an array of ellipses."
+	| p |
+	
+	dots _ OrderedCollection new.
+	dots add: (p _ (EllipseMorph new openInWorld morphPosition: 900@450)).
+	p color: Color green.
+	self threat do: [:ea | dots add: (EllipseMorph new openInWorld morphPosition: 900@450 + (40 * ea))]! !
+
+!Piece class methodsFor: 'definition' stamp: 'dhn 7/20/2018 19:42:15'!
+horizontal
+	"Answer the greatest possible horizontal reach"
+	| col |
+
+	col _ OrderedCollection new.
+	self reach do: [:ea | col add: ea@0].
+	^col! !
+
+!Piece class methodsFor: 'definition' stamp: 'dhn 7/20/2018 20:32:07'!
+leftDiagonal
+	"Answer the greatest possible left diagonal reach"
+	| col |
+
+	col _ OrderedCollection new.
+	self reach do: [:ea | col add: ea@ea].
+	^col! !
+
+!Piece class methodsFor: 'definition' stamp: 'dhn 7/20/2018 19:34:59'!
+reach
+	"Answer the maximum theoretical movement of a piece in any direction"
+	
+	^ (-7 to: -1) asOrderedCollection, (1 to: 7) asOrderedCollection! !
+
+!Piece class methodsFor: 'definition' stamp: 'dhn 7/20/2018 20:32:52'!
+rightDiagonal
+	"Answer the greatest possible right diagonal reach"
+	| col |
+
+	col _ OrderedCollection new.
+	self reach do: [:ea | col add: ea negated@ea].
+	^col! !
+
+!Piece class methodsFor: 'definition' stamp: 'dhn 7/20/2018 19:44:14'!
+vertical
+	"Answer the greatest possible vertical reach"
+	| col |
+
+	col _ OrderedCollection new.
+	self reach do: [:ea | col add: 0@ea].
+	^col! !
+
+!Bishop methodsFor: 'operating' stamp: 'dhn 7/20/2018 21:54:35'!
+scope
+	"Answer the scope of movement, relative to the current position"
+	
+	^ Piece rightDiagonal, Piece leftDiagonal! !
+
+!King methodsFor: 'operating' stamp: 'dhn 7/20/2018 18:58:20'!
+scope
+	"Answer the scope of movement, relative to the current position"
+	
+	^ OrderedCollection new
+		add: 1@1; 
+		add: 1@0; 
+		add: 1@-1; 
+		add: 0@1; 
+		add: 0@-1; 
+		add: -1@1; 
+		add: -1@0; 
+		add: -1@-1; 
+		yourself! !
+
+!Knight methodsFor: 'operating' stamp: 'dhn 7/20/2018 22:10:15'!
+scope
+	"Answer the scope of movement, relative to the current position"
+	
+	^ OrderedCollection new
+		add: 1@-2; 
+		add: 2@-1; 
+		add: 2@1; 
+		add: 1@2; 
+		add: -1@2; 
+		add: -2@1; 
+		add: -2@-1; 
+		add: -1@-2; 
+		yourself! !
+
+!Pawn methodsFor: 'operating' stamp: 'dhn 7/20/2018 18:32:53'!
+scope
+	"Answer the scope of movement, relative to the current position"
+	
+	color = 'w'
+		ifTrue: [ "white pawn"
+			self rank = 7
+				ifTrue: [^ OrderedCollection with: 0@-1 with: 0@-2]
+				ifFalse: [^ OrderedCollection with: 0@-1]]
+		ifFalse: [ "black pawn"
+			self rank = 2
+				ifTrue: [^ OrderedCollection with: 0@1 with: 0@2]
+				ifFalse: [^ OrderedCollection with: 0@1]]! !
+
+!Pawn methodsFor: 'operating' stamp: 'dhn 7/20/2018 18:40:11'!
+threat
+	"Answer the positions threatened, relative to current position"
+	
+	^ color = 'w'
+		ifTrue: [OrderedCollection with: -1@-1 with: 1@-1]
+		ifFalse: [OrderedCollection with: -1@1 with: 1@1]! !
+
+!Queen methodsFor: 'operating' stamp: 'dhn 7/20/2018 21:11:34'!
+scope
+	"Answer the scope of movement, relative to the current position"
+	
+	^ Piece rightDiagonal, Piece leftDiagonal, Piece vertical, Piece horizontal! !
+
+!Rook methodsFor: 'operating' stamp: 'dhn 7/20/2018 21:55:46'!
+scope
+	"Answer the scope of movement, relative to the current position"
+	
+	^ Piece vertical, Piece horizontal! !
 
 !Progress methodsFor: 'operating' stamp: 'dhn 7/13/2018 19:43:12'!
 percent: arr
