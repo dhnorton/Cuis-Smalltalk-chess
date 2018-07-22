@@ -1,8 +1,18 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3329] on 20 July 2018 at 10:25:50 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3374] on 22 July 2018 at 3:35:41 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 20!
+!provides: 'FEN' 1 28!
 SystemOrganization addCategory: #FEN!
 
+
+!classDefinition: #Board category: #FEN!
+ActiveModel subclass: #Board
+	instanceVariableNames: 'pieces'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Board class' category: #FEN!
+Board class
+	instanceVariableNames: ''!
 
 !classDefinition: #InFen category: #FEN!
 Object subclass: #InFen
@@ -95,6 +105,9 @@ Progress class
 	instanceVariableNames: ''!
 
 
+!Board commentStamp: '<historical>' prior: 0!
+The chess board model.!
+
 !InFen commentStamp: 'dhn 6/19/2018 17:24:41' prior: 0!
 Extract position records from a file and write an individual *.fen file for each group of records. The file is compatible with Xboard in that the first record defines the position of the pieces. The remaining records from the group follow in their original sequence.
 
@@ -136,6 +149,43 @@ Progress new percent:  #(
 3 2
 ).
 !
+
+!Board methodsFor: 'initialization' stamp: 'dhn 7/22/2018 15:33:13'!
+initialize
+	"Place the chess pieces in their initial position"
+	
+	pieces _ OrderedCollection new
+		addAll: (Piece type: #Rook color: 'b' at: {1@1. 8@1});
+		addAll: (Piece type: #Rook color: 'w' at: {1@8. 8@8});
+		addAll: (Piece type: #Knight color: 'b' at: {2@1. 7@1});
+		addAll: (Piece type: #Knight color: 'w' at: {2@8. 7@8});
+		addAll: (Piece type: #Bishop color: 'b' at: {3@1. 6@1});
+		addAll: (Piece type: #Bishop color: 'w' at: {3@8. 6@8});
+		addAll: (Piece type: #Queen color: 'b' at: {4@1});
+		addAll: (Piece type: #Queen color: 'w' at: {4@8});
+		addAll: (Piece type: #King color: 'b' at: {5@1});
+		addAll: (Piece type: #King color: 'w' at: {5@8});
+		addAll: self pawns;
+		yourself! !
+
+!Board methodsFor: 'initialization' stamp: 'dhn 7/22/2018 12:01:45'!
+pawns
+	"Answer the pawns in their starting positions"
+	
+	^ OrderedCollection new
+		addAll: (self pawns: 'b');
+		addAll: (self pawns: 'w');
+		yourself! !
+
+!Board methodsFor: 'initialization' stamp: 'dhn 7/22/2018 12:12:19'!
+pawns: color
+	"Answer the pawns of color in their starting positions"
+	| rank col |
+	
+	rank _ color = 'b' ifTrue: [2] ifFalse: [7].
+	col _ OrderedCollection new.
+	1 to: 16 do: [:a | col add: (Pawn new: a@rank color: color)].
+	^ col! !
 
 !InFen methodsFor: 'I/O' stamp: 'dhn 6/23/2018 11:31:04'!
 baseName
@@ -394,6 +444,24 @@ vertical
 	col _ OrderedCollection new.
 	self reach do: [:ea | col add: 0@ea].
 	^col! !
+
+!Piece class methodsFor: 'instance creation' stamp: 'dhn 7/22/2018 11:54:29'!
+new: aPosition color: aColor
+	"Answer an instance of this class at aPosition, color aColor"
+	
+	^ self basicNew
+		position: aPosition;
+		color: aColor! !
+
+!Piece class methodsFor: 'instance creation' stamp: 'dhn 7/22/2018 15:28:27'!
+type: aSymbol color: aString at: aCollection
+	"Answer chess pieces of class aSymbol with color aString at positions in aCollection"
+	| col |
+	
+	col _ OrderedCollection new.
+	aCollection do: [ :ea |
+		col add: ((Smalltalk at: aSymbol) new: ea color: aString)].
+	^ col! !
 
 !Bishop methodsFor: 'operating' stamp: 'dhn 7/20/2018 21:54:35'!
 scope
