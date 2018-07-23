@@ -1,17 +1,27 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3374] on 22 July 2018 at 3:52:54 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3374] on 23 July 2018 at 3:54:48 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 29!
+!provides: 'FEN' 1 34!
 SystemOrganization addCategory: #FEN!
 
 
 !classDefinition: #Board category: #FEN!
 ActiveModel subclass: #Board
-	instanceVariableNames: 'pieces'
+	instanceVariableNames: 'pieces counter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'FEN'!
 !classDefinition: 'Board class' category: #FEN!
 Board class
+	instanceVariableNames: ''!
+
+!classDefinition: #Count category: #FEN!
+Object subclass: #Count
+	instanceVariableNames: 'tally'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Count class' category: #FEN!
+Count class
 	instanceVariableNames: ''!
 
 !classDefinition: #InFen category: #FEN!
@@ -108,6 +118,9 @@ Progress class
 !Board commentStamp: '<historical>' prior: 0!
 The chess board model.!
 
+!Count commentStamp: '<historical>' prior: 0!
+A counter with increment and reset methods.!
+
 !InFen commentStamp: 'dhn 6/19/2018 17:24:41' prior: 0!
 Extract position records from a file and write an individual *.fen file for each group of records. The file is compatible with Xboard in that the first record defines the position of the pieces. The remaining records from the group follow in their original sequence.
 
@@ -150,11 +163,12 @@ Progress new percent:  #(
 ).
 !
 
-!Board methodsFor: 'initialization' stamp: 'dhn 7/22/2018 15:46:18'!
+!Board methodsFor: 'initialization' stamp: 'dhn 7/23/2018 15:28:51'!
 initialize
 	"Place the chess pieces in their initial position"
 	
-	pieces _ OrderedCollection new
+	counter _ Count new.
+	pieces _ self organize: (OrderedCollection new
 		addAll: (Piece type: #Rook color: 'b' at: {1@1. 8@1});
 		addAll: (Piece type: #Rook color: 'w' at: {1@8. 8@8});
 		addAll: (Piece type: #Knight color: 'b' at: {2@1. 7@1});
@@ -166,7 +180,74 @@ initialize
 		addAll: (Piece type: #King color: 'b' at: {5@1});
 		addAll: (Piece type: #King color: 'w' at: {5@8});
 		addAll: Piece pawns;
-		yourself! !
+		yourself)! !
+
+!Board methodsFor: 'initialization' stamp: 'dhn 7/22/2018 16:58:48'!
+organize: aCollection
+	"Answer the arrangement of aCollection in chess order"
+	| arr |
+	
+	arr _ Array2D newSize: 8@8.
+	aCollection do: [:ea | 	arr at: ea position put: ea].
+	^ arr! !
+
+!Board methodsFor: 'translate' stamp: 'dhn 7/23/2018 15:33:25'!
+fen: aCollection
+	"Answer the basic FEN string for aCollection"
+	
+	^ String streamContents: [:str |
+		1 to: 8 do: [:ix |
+			counter reset.
+			1 to: 8 do: [:iy |
+				(aCollection i: ix j: iy)
+					ifNil: [counter increment]
+					ifNotNil: [
+						str 
+							nextPutAll: counter printString;
+							nextPutAll: (aCollection i: ix j: iy) printString]].
+			str nextPutAll: counter printString.
+			ix < 8 ifTrue: [str nextPutAll: '/']]]! !
+
+!Board methodsFor: 'accessing' stamp: 'dhn 7/22/2018 16:11:46'!
+pieces
+	"Answer the value of pieces"
+
+	^ pieces! !
+
+!Board methodsFor: 'accessing' stamp: 'dhn 7/22/2018 16:11:46'!
+pieces: anObject
+	"Set the value of pieces"
+
+	pieces _ anObject! !
+
+!Count methodsFor: 'display' stamp: 'dhn 7/23/2018 15:44:23'!
+printString
+	"Answer an empty string if zero else as string and reset"
+	
+	tally = 0
+		ifTrue: [^ '']
+		ifFalse: [ | temp |
+			temp _ tally.
+			self reset.
+			^ temp asString]
+! !
+
+!Count methodsFor: 'operation' stamp: 'dhn 7/23/2018 15:39:59'!
+increment
+	"Advance the counter"
+
+	tally _ tally + 1! !
+
+!Count methodsFor: 'operation' stamp: 'dhn 7/23/2018 15:40:28'!
+reset
+	"Reset the counter"
+	
+	tally _ 0! !
+
+!Count methodsFor: 'initialization' stamp: 'dhn 7/23/2018 15:24:44'!
+initialize
+	
+	tally _ 0! !
 
 !InFen methodsFor: 'I/O' stamp: 'dhn 6/23/2018 11:31:04'!
 baseName
@@ -361,6 +442,14 @@ rank
 	
 	^ position y! !
 
+!Piece methodsFor: 'operating' stamp: 'dhn 7/22/2018 22:02:48'!
+printString
+	"Answer the string representing the piece for FEN"
+	
+	^ self color = 'b'
+		ifTrue: [self class symbol]
+		ifFalse: [self class symbol asUppercase]! !
+
 !Piece methodsFor: 'operating' stamp: 'dhn 7/20/2018 18:42:07'!
 threat
 	"Answer the positions threatened, relative to current position"
@@ -469,6 +558,12 @@ scope
 	
 	^ Piece rightDiagonal, Piece leftDiagonal! !
 
+!Bishop class methodsFor: 'definition' stamp: 'dhn 7/22/2018 17:15:16'!
+symbol
+	"Answer the letter symbol for self"
+	
+	^ 'b'! !
+
 !King methodsFor: 'operating' stamp: 'dhn 7/20/2018 18:58:20'!
 scope
 	"Answer the scope of movement, relative to the current position"
@@ -484,6 +579,12 @@ scope
 		add: -1@-1; 
 		yourself! !
 
+!King class methodsFor: 'definition' stamp: 'dhn 7/22/2018 17:16:24'!
+symbol
+	"Answer the letter symbol for self"
+	
+	^ 'k'! !
+
 !Knight methodsFor: 'operating' stamp: 'dhn 7/20/2018 22:10:15'!
 scope
 	"Answer the scope of movement, relative to the current position"
@@ -498,6 +599,12 @@ scope
 		add: -2@-1; 
 		add: -1@-2; 
 		yourself! !
+
+!Knight class methodsFor: 'definition' stamp: 'dhn 7/22/2018 17:16:36'!
+symbol
+	"Answer the letter symbol for self"
+	
+	^ 'n'! !
 
 !Pawn methodsFor: 'operating' stamp: 'dhn 7/20/2018 18:32:53'!
 scope
@@ -521,17 +628,35 @@ threat
 		ifTrue: [OrderedCollection with: -1@-1 with: 1@-1]
 		ifFalse: [OrderedCollection with: -1@1 with: 1@1]! !
 
+!Pawn class methodsFor: 'definition' stamp: 'dhn 7/22/2018 17:13:16'!
+symbol
+	"Answer the letter symbol for self"
+	
+	^ 'p'! !
+
 !Queen methodsFor: 'operating' stamp: 'dhn 7/20/2018 21:11:34'!
 scope
 	"Answer the scope of movement, relative to the current position"
 	
 	^ Piece rightDiagonal, Piece leftDiagonal, Piece vertical, Piece horizontal! !
 
+!Queen class methodsFor: 'definition' stamp: 'dhn 7/22/2018 17:15:43'!
+symbol
+	"Answer the letter symbol for self"
+	
+	^ 'q'! !
+
 !Rook methodsFor: 'operating' stamp: 'dhn 7/20/2018 21:55:46'!
 scope
 	"Answer the scope of movement, relative to the current position"
 	
 	^ Piece vertical, Piece horizontal! !
+
+!Rook class methodsFor: 'definition' stamp: 'dhn 7/22/2018 17:14:39'!
+symbol
+	"Answer the letter symbol for self"
+	
+	^ 'r'! !
 
 !Progress methodsFor: 'operating' stamp: 'dhn 7/13/2018 19:43:12'!
 percent: arr
