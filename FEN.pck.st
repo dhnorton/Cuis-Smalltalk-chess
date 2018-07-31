@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 31 July 2018 at 6:29:15 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 31 July 2018 at 7:54:22 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 38!
+!provides: 'FEN' 1 39!
 SystemOrganization addCategory: #FEN!
 
 
@@ -517,6 +517,14 @@ movesFrom: aString
 		(ea allSatisfy: [:a | a isDigit])
 			ifFalse: [moves add: ea]].
 	^ moves! !
+
+!Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 19:53:40'!
+withoutCrLf: aString
+	"Answer aString with cr and lf removed"
+
+	^ String streamContents: [:str |
+		(aString select: [:a | (a ~= Character cr) and: [a ~= Character lf]]) do: [:ea |
+			str nextPut: ea]]! !
 
 !Pgn class methodsFor: 'testing' stamp: 'dhn 7/31/2018 10:51:50'!
 example1
