@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3374] on 23 July 2018 at 3:54:48 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 31 July 2018 at 12:02:14 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 34!
+!provides: 'FEN' 1 36!
 SystemOrganization addCategory: #FEN!
 
 
@@ -32,6 +32,16 @@ Object subclass: #InFen
 	category: 'FEN'!
 !classDefinition: 'InFen class' category: #FEN!
 InFen class
+	instanceVariableNames: ''!
+
+!classDefinition: #Pgn category: #FEN!
+Object subclass: #Pgn
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Pgn class' category: #FEN!
+Pgn class
 	instanceVariableNames: ''!
 
 !classDefinition: #Piece category: #FEN!
@@ -127,6 +137,9 @@ Extract position records from a file and write an individual *.fen file for each
 "
 (InFen new: 'chess/m8n/m8n2.txt') write.
 "!
+
+!Pgn commentStamp: '<historical>' prior: 0!
+Chess Portable Game Notation (PGN).!
 
 !Piece commentStamp: '<historical>' prior: 0!
 A chess piece.!
@@ -411,6 +424,26 @@ setup
 	DirectoryEntry roots.  "take no chances: ensure the base directory is '/' "
 	x directory: DirectoryEntry currentDirectory.  "now at /home/<user>"
 	^ x! !
+
+!Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 12:01:56'!
+movesFrom: aString
+	"Transform aString into a collection of moves"
+	"Odd members of the collection are white moves, even are black moves"
+	| col moves |
+	
+	col _ OrderedCollection new.
+	moves _ OrderedCollection new.
+	col addAll: (aString findTokens: '. ').
+	col do: [:ea |
+		(ea allSatisfy: [:a | a isDigit])
+			ifFalse: [moves add: ea]].
+	^ moves! !
+
+!Pgn class methodsFor: 'testing' stamp: 'dhn 7/31/2018 10:51:50'!
+example1
+	"Answer a seven-move example of Chess in PGN"
+	
+	^ '1. e4 e5 2. Nc3 Nc6 3. Bc4 Bc5 4. Qg4 Qf6 5. Nd5 Qxf2+ 6. Kd1 Na5 7. Nh3 d6'! !
 
 !Piece methodsFor: 'accessing' stamp: 'dhn 7/20/2018 17:43:56'!
 color
