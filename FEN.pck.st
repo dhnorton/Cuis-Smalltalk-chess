@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 31 July 2018 at 12:02:14 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 31 July 2018 at 6:29:15 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 36!
+!provides: 'FEN' 1 38!
 SystemOrganization addCategory: #FEN!
 
 
@@ -12,6 +12,16 @@ ActiveModel subclass: #Board
 	category: 'FEN'!
 !classDefinition: 'Board class' category: #FEN!
 Board class
+	instanceVariableNames: ''!
+
+!classDefinition: #ChessStream category: #FEN!
+ReadStream subclass: #ChessStream
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'ChessStream class' category: #FEN!
+ChessStream class
 	instanceVariableNames: ''!
 
 !classDefinition: #Count category: #FEN!
@@ -128,6 +138,9 @@ Progress class
 !Board commentStamp: '<historical>' prior: 0!
 The chess board model.!
 
+!ChessStream commentStamp: '<historical>' prior: 0!
+A stream for removing notes and rankings from Chess Portable Game Notation (PGN).!
+
 !Count commentStamp: '<historical>' prior: 0!
 A counter with increment and reset methods.!
 
@@ -232,6 +245,27 @@ pieces: anObject
 	"Set the value of pieces"
 
 	pieces _ anObject! !
+
+!ChessStream methodsFor: 'filtering' stamp: 'dhn 7/31/2018 16:45:13'!
+unBrace
+	"Remove content enclosed by {} "
+	
+	[self peek = ${] whileTrue: [
+		[self atEnd == false and: [self next ~= $}]] whileTrue]! !
+
+!ChessStream methodsFor: 'filtering' stamp: 'dhn 7/31/2018 16:51:30'!
+unBracket
+	"Remove content enclosed by [] "
+	
+	[self peek = $[ ] whileTrue: [
+		[self atEnd == false and: [self next ~= $] ]] whileTrue]! !
+
+!ChessStream methodsFor: 'filtering' stamp: 'dhn 7/31/2018 18:28:10'!
+unParens
+	"Remove content enclosed by () "
+	
+	[self peek = $( ] whileTrue: [
+		[self atEnd == false and: [self next ~= $) ]] whileTrue]! !
 
 !Count methodsFor: 'display' stamp: 'dhn 7/23/2018 15:44:23'!
 printString
@@ -424,6 +458,51 @@ setup
 	DirectoryEntry roots.  "take no chances: ensure the base directory is '/' "
 	x directory: DirectoryEntry currentDirectory.  "now at /home/<user>"
 	^ x! !
+
+!Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 16:45:59'!
+asUnBrace: aString
+	"Remove content enclosed by {} "
+	| in out char |
+	
+	in _ ChessStream on: aString.
+	out _ WriteStream on: (String new: aString size).
+	[ in atEnd ] whileFalse: [
+		in peek = ${
+			ifTrue: [in unBrace] 	"Absorb {...}{...}"
+			ifFalse: [
+				(char _ in next) ~= $}
+					ifTrue: [out nextPut: char]]].
+	^ out contents! !
+
+!Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 17:16:13'!
+asUnBracket: aString
+	"Remove content enclosed by [] "
+	| in out char |
+	
+	in _ ChessStream on: aString.
+	out _ WriteStream on: (String new: aString size).
+	[ in atEnd ] whileFalse: [
+		in peek = $[
+			ifTrue: [in unBracket] 	"Absorb [...][...]"
+			ifFalse: [
+				(char _ in next) ~= $]
+					ifTrue: [out nextPut: char]]].
+	^ out contents! !
+
+!Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 18:27:20'!
+asUnParens: aString
+	"Remove content enclosed by () "
+	| in out char |
+	
+	in _ ChessStream on: aString.
+	out _ WriteStream on: (String new: aString size).
+	[ in atEnd ] whileFalse: [
+		in peek = $(
+			ifTrue: [in unParens] 	"Absorb (...)(...)"
+			ifFalse: [
+				(char _ in next) ~= $)
+					ifTrue: [out nextPut: char]]].
+	^ out contents! !
 
 !Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 12:01:56'!
 movesFrom: aString
