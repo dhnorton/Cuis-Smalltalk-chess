@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 31 July 2018 at 7:54:22 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 1 August 2018 at 7:19:37 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 39!
+!provides: 'FEN' 1 42!
 SystemOrganization addCategory: #FEN!
 
 
@@ -459,51 +459,6 @@ setup
 	x directory: DirectoryEntry currentDirectory.  "now at /home/<user>"
 	^ x! !
 
-!Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 16:45:59'!
-asUnBrace: aString
-	"Remove content enclosed by {} "
-	| in out char |
-	
-	in _ ChessStream on: aString.
-	out _ WriteStream on: (String new: aString size).
-	[ in atEnd ] whileFalse: [
-		in peek = ${
-			ifTrue: [in unBrace] 	"Absorb {...}{...}"
-			ifFalse: [
-				(char _ in next) ~= $}
-					ifTrue: [out nextPut: char]]].
-	^ out contents! !
-
-!Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 17:16:13'!
-asUnBracket: aString
-	"Remove content enclosed by [] "
-	| in out char |
-	
-	in _ ChessStream on: aString.
-	out _ WriteStream on: (String new: aString size).
-	[ in atEnd ] whileFalse: [
-		in peek = $[
-			ifTrue: [in unBracket] 	"Absorb [...][...]"
-			ifFalse: [
-				(char _ in next) ~= $]
-					ifTrue: [out nextPut: char]]].
-	^ out contents! !
-
-!Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 18:27:20'!
-asUnParens: aString
-	"Remove content enclosed by () "
-	| in out char |
-	
-	in _ ChessStream on: aString.
-	out _ WriteStream on: (String new: aString size).
-	[ in atEnd ] whileFalse: [
-		in peek = $(
-			ifTrue: [in unParens] 	"Absorb (...)(...)"
-			ifFalse: [
-				(char _ in next) ~= $)
-					ifTrue: [out nextPut: char]]].
-	^ out contents! !
-
 !Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 12:01:56'!
 movesFrom: aString
 	"Transform aString into a collection of moves"
@@ -517,14 +472,6 @@ movesFrom: aString
 		(ea allSatisfy: [:a | a isDigit])
 			ifFalse: [moves add: ea]].
 	^ moves! !
-
-!Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 19:53:40'!
-withoutCrLf: aString
-	"Answer aString with cr and lf removed"
-
-	^ String streamContents: [:str |
-		(aString select: [:a | (a ~= Character cr) and: [a ~= Character lf]]) do: [:ea |
-			str nextPut: ea]]! !
 
 !Pgn class methodsFor: 'testing' stamp: 'dhn 7/31/2018 10:51:50'!
 example1
