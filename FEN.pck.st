@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 2:37:52 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 2:54:52 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 45!
+!provides: 'FEN' 1 46!
 SystemOrganization addCategory: #FEN!
 
 
@@ -645,9 +645,9 @@ type: aSymbol color: aString at: aCollection
 		col add: ((Smalltalk at: aSymbol) new: ea color: aString)].
 	^ col! !
 
-!Bishop methodsFor: 'operating' stamp: 'dhn 7/20/2018 21:54:35'!
+!Bishop methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:53:14'!
 scope
-	"Answer the scope of movement, relative to the current position"
+	"Answer the theoretical scope of movement, relative to the current position"
 	
 	^ Piece rightDiagonal, Piece leftDiagonal! !
 
@@ -657,9 +657,9 @@ symbol
 	
 	^ 'b'! !
 
-!King methodsFor: 'operating' stamp: 'dhn 7/20/2018 18:58:20'!
+!King methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:52:53'!
 scope
-	"Answer the scope of movement, relative to the current position"
+	"Answer the theoretical scope of movement, relative to the current position"
 	
 	^ OrderedCollection new
 		add: 1@1; 
@@ -678,9 +678,9 @@ symbol
 	
 	^ 'k'! !
 
-!Knight methodsFor: 'operating' stamp: 'dhn 7/20/2018 22:10:15'!
+!Knight methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:52:34'!
 scope
-	"Answer the scope of movement, relative to the current position"
+	"Answer the theoretical scope of movement, relative to the current position"
 	
 	^ OrderedCollection new
 		add: 1@-2; 
@@ -699,9 +699,9 @@ symbol
 	
 	^ 'n'! !
 
-!Pawn methodsFor: 'operating' stamp: 'dhn 7/20/2018 18:32:53'!
+!Pawn methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:52:10'!
 scope
-	"Answer the scope of movement, relative to the current position"
+	"Answer the theoretical scope of movement, relative to the current position"
 	
 	color = 'w'
 		ifTrue: [ "white pawn"
@@ -727,9 +727,9 @@ symbol
 	
 	^ 'p'! !
 
-!Queen methodsFor: 'operating' stamp: 'dhn 7/20/2018 21:11:34'!
+!Queen methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:50:41'!
 scope
-	"Answer the scope of movement, relative to the current position"
+	"Answer the theoretical scope of movement, relative to the current position"
 	
 	^ Piece rightDiagonal, Piece leftDiagonal, Piece vertical, Piece horizontal! !
 
@@ -739,9 +739,9 @@ symbol
 	
 	^ 'q'! !
 
-!Rook methodsFor: 'operating' stamp: 'dhn 7/20/2018 21:55:46'!
+!Rook methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:51:33'!
 scope
-	"Answer the scope of movement, relative to the current position"
+	"Answer the theoretical scope of movement, relative to the current position"
 	
 	^ Piece vertical, Piece horizontal! !
 
