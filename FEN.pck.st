@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 2:17:33 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 2:37:52 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 44!
+!provides: 'FEN' 1 45!
 SystemOrganization addCategory: #FEN!
 
 
@@ -216,6 +216,12 @@ organize: aCollection
 	arr _ Array2D newSize: 8@8.
 	aCollection do: [:ea | 	arr at: ea position put: ea].
 	^ arr! !
+
+!Board methodsFor: 'translate' stamp: 'dhn 8/2/2018 14:36:10'!
+fen
+	"Answer the basic FEN string for pieces ivar"
+	
+	^ self fen: pieces! !
 
 !Board methodsFor: 'translate' stamp: 'dhn 7/23/2018 15:33:25'!
 fen: aCollection
