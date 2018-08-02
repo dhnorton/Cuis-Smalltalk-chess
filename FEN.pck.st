@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 2:54:52 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 3:18:37 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 46!
+!provides: 'FEN' 1 47!
 SystemOrganization addCategory: #FEN!
 
 
@@ -56,7 +56,7 @@ Pgn class
 
 !classDefinition: #Piece category: #FEN!
 Object subclass: #Piece
-	instanceVariableNames: 'position color dots'
+	instanceVariableNames: 'position color dots move threat'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'FEN'!
@@ -517,6 +517,20 @@ color: anObject
 
 	color _ anObject! !
 
+!Piece methodsFor: 'accessing' stamp: 'dhn 8/2/2018 15:15:52'!
+move
+	"Answer the possible move positions, relative to current position, without capture"
+	
+	^ move 
+		ifNotNil: [move]
+		ifNil: [OrderedCollection new]! !
+
+!Piece methodsFor: 'accessing' stamp: 'dhn 8/2/2018 15:17:01'!
+move: aCollection
+	"Set the possible move positions, relative to current position"
+	
+	move _ aCollection! !
+
 !Piece methodsFor: 'accessing' stamp: 'dhn 7/20/2018 17:43:56'!
 position
 	"Answer the value of position"
@@ -535,6 +549,20 @@ rank
 	
 	^ position y! !
 
+!Piece methodsFor: 'accessing' stamp: 'dhn 8/2/2018 15:11:02'!
+threat
+	"Answer the positions threatened, relative to current position"
+	
+	^ threat 
+		ifNotNil: [threat]
+		ifNil: [OrderedCollection new]! !
+
+!Piece methodsFor: 'accessing' stamp: 'dhn 8/2/2018 15:06:37'!
+threat: aCollection
+	"Set the positions threatened, relative to current position"
+	
+	threat _ aCollection! !
+
 !Piece methodsFor: 'operating' stamp: 'dhn 7/22/2018 22:02:48'!
 printString
 	"Answer the string representing the piece for FEN"
@@ -542,13 +570,6 @@ printString
 	^ self color = 'b'
 		ifTrue: [self class symbol]
 		ifFalse: [self class symbol asUppercase]! !
-
-!Piece methodsFor: 'operating' stamp: 'dhn 7/20/2018 18:42:07'!
-threat
-	"Answer the positions threatened, relative to current position"
-	
-	^ self scope
-! !
 
 !Piece methodsFor: 'testing' stamp: 'dhn 7/20/2018 21:51:44'!
 clean
