@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 1 August 2018 at 9:12:43 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 2:17:33 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 43!
+!provides: 'FEN' 1 44!
 SystemOrganization addCategory: #FEN!
 
 
@@ -459,7 +459,7 @@ setup
 	x directory: DirectoryEntry currentDirectory.  "now at /home/<user>"
 	^ x! !
 
-!Pgn methodsFor: 'parsing' stamp: 'dhn 7/31/2018 12:01:56'!
+!Pgn methodsFor: 'parsing' stamp: 'dhn 8/2/2018 14:11:59'!
 movesFrom: aString
 	"Transform aString into a collection of moves"
 	"Odd members of the collection are white moves, even are black moves"
@@ -467,7 +467,7 @@ movesFrom: aString
 	
 	col _ OrderedCollection new.
 	moves _ OrderedCollection new.
-	col addAll: (aString findTokens: '. ').
+	col addAll: (aString withoutBraces :: withoutParens :: withoutBrackets :: withoutCrLf :: findTokens: '. ').
 	col do: [:ea |
 		(ea allSatisfy: [:a | a isDigit])
 			ifFalse: [moves add: ea]].
