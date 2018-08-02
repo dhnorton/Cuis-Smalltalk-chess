@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 1 August 2018 at 7:19:37 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 1 August 2018 at 9:12:43 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 42!
+!provides: 'FEN' 1 43!
 SystemOrganization addCategory: #FEN!
 
 
@@ -472,6 +472,26 @@ movesFrom: aString
 		(ea allSatisfy: [:a | a isDigit])
 			ifFalse: [moves add: ea]].
 	^ moves! !
+
+!Pgn methodsFor: 'printing' stamp: 'dhn 8/1/2018 21:07:09'!
+printMoves: aCollection
+	"Answer a list of the moves in aCollection as numbered pairs"
+	| ix |
+	
+	ix _ 1.
+	^ String streamContents: [ :str |
+		1 to: aCollection size do: [:n |
+			n odd
+				ifTrue: [
+					str 
+						nextPutAll: ix printString;
+						nextPutAll: '. ';
+						nextPutAll: (aCollection at: n);
+						nextPut: $ .
+					ix _ ix + 1]
+				ifFalse: [
+					str
+						nextPutAll: (aCollection at: n); newLine]]]! !
 
 !Pgn class methodsFor: 'testing' stamp: 'dhn 7/31/2018 10:51:50'!
 example1
