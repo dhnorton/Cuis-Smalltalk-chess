@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 4:55:19 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 7:20:25 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 48!
+!provides: 'FEN' 1 49!
 SystemOrganization addCategory: #FEN!
 
 
@@ -565,11 +565,13 @@ threat: aCollection
 	
 	threat _ aCollection! !
 
-!Piece methodsFor: 'operating' stamp: 'dhn 8/2/2018 16:48:17'!
+!Piece methodsFor: 'operating' stamp: 'dhn 8/2/2018 19:12:05'!
 onBoard: aCollection
 	"Answer moves from aCollection which theoretically remain on the board"
 
-	! !
+	^ aCollection select: [:a | | pos |
+		pos _ a + position.
+		pos >= (1@1) and: pos <= (8@8)]! !
 
 !Piece methodsFor: 'operating' stamp: 'dhn 7/22/2018 22:02:48'!
 printString
@@ -718,10 +720,10 @@ symbol
 	
 	^ 'k'! !
 
-!Knight methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:52:34'!
+!Knight methodsFor: 'operating' stamp: 'dhn 8/2/2018 18:42:12'!
 scope
 	"Answer the theoretical scope of movement, relative to the current position"
-	
+
 	^ OrderedCollection new
 		add: 1@-2; 
 		add: 2@-1; 
@@ -738,14 +740,6 @@ symbol
 	"Answer the letter symbol for self"
 	
 	^ 'n'! !
-
-!Pawn methodsFor: 'operating' stamp: 'dhn 8/2/2018 16:51:20'!
-onBoard: aCollection
-	"Answer moves from aCollection which theoretically remain on the board"
-	
-	^ aCollection select: [:a | | pos |
-		pos _ a + position.
-		pos >= (1@1) and: pos <= (8@8)]! !
 
 !Pawn methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:52:10'!
 scope
@@ -786,14 +780,6 @@ symbol
 	"Answer the letter symbol for self"
 	
 	^ 'q'! !
-
-!Rook methodsFor: 'operating' stamp: 'dhn 8/2/2018 16:47:40'!
-onBoard: aCollection
-	"Answer moves from aCollection which theoretically remain on the board"
-	
-	^ aCollection select: [:a | | pos |
-		pos _ a + position.
-		pos >= (1@1) and: pos <= (8@8)]! !
 
 !Rook methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:51:33'!
 scope
