@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 3:18:37 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 4:55:19 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 47!
+!provides: 'FEN' 1 48!
 SystemOrganization addCategory: #FEN!
 
 
@@ -189,7 +189,7 @@ Progress new percent:  #(
 ).
 !
 
-!Board methodsFor: 'initialization' stamp: 'dhn 7/23/2018 15:28:51'!
+!Board methodsFor: 'initialization' stamp: 'dhn 8/2/2018 16:29:12'!
 initialize
 	"Place the chess pieces in their initial position"
 	
@@ -206,7 +206,9 @@ initialize
 		addAll: (Piece type: #King color: 'b' at: {5@1});
 		addAll: (Piece type: #King color: 'w' at: {5@8});
 		addAll: Piece pawns;
-		yourself)! !
+		yourself).
+	pieces do: [:ea |
+		ea ifNotNil: [ea move: ea pruneMove]]! !
 
 !Board methodsFor: 'initialization' stamp: 'dhn 7/22/2018 16:58:48'!
 organize: aCollection
@@ -563,6 +565,12 @@ threat: aCollection
 	
 	threat _ aCollection! !
 
+!Piece methodsFor: 'operating' stamp: 'dhn 8/2/2018 16:48:17'!
+onBoard: aCollection
+	"Answer moves from aCollection which theoretically remain on the board"
+
+	! !
+
 !Piece methodsFor: 'operating' stamp: 'dhn 7/22/2018 22:02:48'!
 printString
 	"Answer the string representing the piece for FEN"
@@ -570,6 +578,17 @@ printString
 	^ self color = 'b'
 		ifTrue: [self class symbol]
 		ifFalse: [self class symbol asUppercase]! !
+
+!Piece methodsFor: 'operating' stamp: 'dhn 8/2/2018 16:29:57'!
+pruneMove
+	"Answer the actual moves possible, without capture, relative to the current position"
+	| col |
+	
+	col _ OrderedCollection new.
+	
+	"eliminate off-board moves"
+	col addAll: (self onBoard: self scope); yourself.
+	^ col! !
 
 !Piece methodsFor: 'testing' stamp: 'dhn 7/20/2018 21:51:44'!
 clean
@@ -720,6 +739,14 @@ symbol
 	
 	^ 'n'! !
 
+!Pawn methodsFor: 'operating' stamp: 'dhn 8/2/2018 16:51:20'!
+onBoard: aCollection
+	"Answer moves from aCollection which theoretically remain on the board"
+	
+	^ aCollection select: [:a | | pos |
+		pos _ a + position.
+		pos >= (1@1) and: pos <= (8@8)]! !
+
 !Pawn methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:52:10'!
 scope
 	"Answer the theoretical scope of movement, relative to the current position"
@@ -759,6 +786,14 @@ symbol
 	"Answer the letter symbol for self"
 	
 	^ 'q'! !
+
+!Rook methodsFor: 'operating' stamp: 'dhn 8/2/2018 16:47:40'!
+onBoard: aCollection
+	"Answer moves from aCollection which theoretically remain on the board"
+	
+	^ aCollection select: [:a | | pos |
+		pos _ a + position.
+		pos >= (1@1) and: pos <= (8@8)]! !
 
 !Rook methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:51:33'!
 scope
