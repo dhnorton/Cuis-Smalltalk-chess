@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 7:20:25 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 10:45:48 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 49!
+!provides: 'FEN' 1 50!
 SystemOrganization addCategory: #FEN!
 
 
@@ -56,7 +56,7 @@ Pgn class
 
 !classDefinition: #Piece category: #FEN!
 Object subclass: #Piece
-	instanceVariableNames: 'position color dots move threat'
+	instanceVariableNames: 'position color board dots range move threat'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'FEN'!
@@ -155,7 +155,15 @@ Extract position records from a file and write an individual *.fen file for each
 Chess Portable Game Notation (PGN).!
 
 !Piece commentStamp: '<historical>' prior: 0!
-A chess piece.!
+A chess piece with the following variables, relative to position:
+
+	scope - the maximum theoretical movement of the piece; a class method, not a variable
+
+	range - a proper subset of scope consisting of spaces actually on the board
+
+	move - a proper subset of range consisting of unoccupied, unblocked spaces
+
+	threat - a proper subset of range consisting of unblocked spaces occupied by the opponent!
 
 !Bishop commentStamp: '<historical>' prior: 0!
 The bishop piece.!
@@ -189,7 +197,7 @@ Progress new percent:  #(
 ).
 !
 
-!Board methodsFor: 'initialization' stamp: 'dhn 8/2/2018 16:29:12'!
+!Board methodsFor: 'initialization' stamp: 'dhn 8/2/2018 22:04:41'!
 initialize
 	"Place the chess pieces in their initial position"
 	
@@ -208,7 +216,9 @@ initialize
 		addAll: Piece pawns;
 		yourself).
 	pieces do: [:ea |
-		ea ifNotNil: [ea move: ea pruneMove]]! !
+		ea ifNotNil: [
+			ea board: self.
+			ea range: ea setRange]]! !
 
 !Board methodsFor: 'initialization' stamp: 'dhn 7/22/2018 16:58:48'!
 organize: aCollection
@@ -507,6 +517,18 @@ example1
 	
 	^ '1. e4 e5 2. Nc3 Nc6 3. Bc4 Bc5 4. Qg4 Qf6 5. Nd5 Qxf2+ 6. Kd1 Na5 7. Nh3 d6'! !
 
+!Piece methodsFor: 'accessing' stamp: 'dhn 8/2/2018 20:03:32'!
+board
+	"Answer the value of board"
+
+	^ board! !
+
+!Piece methodsFor: 'accessing' stamp: 'dhn 8/2/2018 20:04:06'!
+board: anObject
+	"Set the value of board"
+
+	board _ anObject! !
+
 !Piece methodsFor: 'accessing' stamp: 'dhn 7/20/2018 17:43:56'!
 color
 	"Answer the value of color"
@@ -519,9 +541,9 @@ color: anObject
 
 	color _ anObject! !
 
-!Piece methodsFor: 'accessing' stamp: 'dhn 8/2/2018 15:15:52'!
+!Piece methodsFor: 'accessing' stamp: 'dhn 8/2/2018 20:11:26'!
 move
-	"Answer the possible move positions, relative to current position, without capture"
+	"Answer the possible move positions, relative to current position, without capturing opponent's piece"
 	
 	^ move 
 		ifNotNil: [move]
@@ -544,6 +566,18 @@ position: anObject
 	"Set the value of position"
 
 	position _ anObject! !
+
+!Piece methodsFor: 'accessing' stamp: 'dhn 8/2/2018 21:49:49'!
+range
+	"Answer the value of range"
+
+	^ range! !
+
+!Piece methodsFor: 'accessing' stamp: 'dhn 8/2/2018 21:50:07'!
+range: anObject
+	"Set the value of range"
+
+	range _ anObject! !
 
 !Piece methodsFor: 'accessing' stamp: 'dhn 7/20/2018 18:12:07'!
 rank
@@ -581,16 +615,18 @@ printString
 		ifTrue: [self class symbol]
 		ifFalse: [self class symbol asUppercase]! !
 
-!Piece methodsFor: 'operating' stamp: 'dhn 8/2/2018 16:29:57'!
-pruneMove
-	"Answer the actual moves possible, without capture, relative to the current position"
-	| col |
+!Piece methodsFor: 'operating' stamp: 'dhn 8/2/2018 21:58:23'!
+setRange
+	"Answer the subset of scope which is within the board"
 	
-	col _ OrderedCollection new.
+	^ OrderedCollection new
+		addAll: (self onBoard: self scope)! !
+
+!Piece methodsFor: 'operating' stamp: 'dhn 8/2/2018 20:21:40'!
+trimScope: aCollection
+	"Placeholder"
 	
-	"eliminate off-board moves"
-	col addAll: (self onBoard: self scope); yourself.
-	^ col! !
+	^ aCollection! !
 
 !Piece methodsFor: 'testing' stamp: 'dhn 7/20/2018 21:51:44'!
 clean
@@ -607,6 +643,78 @@ view
 	dots add: (p _ (EllipseMorph new openInWorld morphPosition: 900@450)).
 	p color: Color green.
 	self threat do: [:ea | dots add: (EllipseMorph new openInWorld morphPosition: 900@450 + (40 * ea))]! !
+
+!Piece class methodsFor: 'rays' stamp: 'dhn 8/2/2018 22:36:35'!
+east
+	"Answer the ordered spaces in this direction"
+	| col |
+
+	col _ OrderedCollection new.
+	1 to: 7 do: [:ea | col add: ea@0].
+	^col! !
+
+!Piece class methodsFor: 'rays' stamp: 'dhn 8/2/2018 22:32:03'!
+north
+	"Answer the ordered spaces in this direction"
+	| col |
+
+	col _ OrderedCollection new.
+	1 to: 7 do: [:ea | col add: 0@ea].
+	^col! !
+
+!Piece class methodsFor: 'rays' stamp: 'dhn 8/2/2018 22:40:02'!
+northeast
+	"Answer the ordered spaces in this direction"
+	| col |
+
+	col _ OrderedCollection new.
+	1 to: 7 do: [:ea | col add: ea@ea].
+	^col! !
+
+!Piece class methodsFor: 'rays' stamp: 'dhn 8/2/2018 22:43:40'!
+northwest
+	"Answer the ordered spaces in this direction"
+	| col |
+
+	col _ OrderedCollection new.
+	1 to: 7 do: [:ea | col add: ea negated@ea].
+	^col! !
+
+!Piece class methodsFor: 'rays' stamp: 'dhn 8/2/2018 22:32:55'!
+south
+	"Answer the ordered spaces in this direction"
+	| col |
+
+	col _ OrderedCollection new.
+	1 to: 7 do: [:ea | col add: 0@ea negated].
+	^col! !
+
+!Piece class methodsFor: 'rays' stamp: 'dhn 8/2/2018 22:42:43'!
+southeast
+	"Answer the ordered spaces in this direction"
+	| col |
+
+	col _ OrderedCollection new.
+	1 to: 7 do: [:ea | col add: ea@ea negated].
+	^col! !
+
+!Piece class methodsFor: 'rays' stamp: 'dhn 8/2/2018 22:41:17'!
+southwest
+	"Answer the ordered spaces in this direction"
+	| col |
+
+	col _ OrderedCollection new.
+	1 to: 7 do: [:ea | col add: ea negated@ea negated].
+	^col! !
+
+!Piece class methodsFor: 'rays' stamp: 'dhn 8/2/2018 22:33:59'!
+west
+	"Answer the ordered spaces in this direction"
+	| col |
+
+	col _ OrderedCollection new.
+	1 to: 7 do: [:ea | col add: ea negated@0].
+	^col! !
 
 !Piece class methodsFor: 'definition' stamp: 'dhn 7/20/2018 19:42:15'!
 horizontal
@@ -734,6 +842,12 @@ scope
 		add: -2@-1; 
 		add: -1@-2; 
 		yourself! !
+
+!Knight methodsFor: 'operating' stamp: 'dhn 8/2/2018 21:39:45'!
+trimScope: aCollection
+	"Answer the open spaces within aCollection"
+	
+	^ aCollection select: [:ea | (board pieces at: ea) = nil]! !
 
 !Knight class methodsFor: 'definition' stamp: 'dhn 7/22/2018 17:16:36'!
 symbol
