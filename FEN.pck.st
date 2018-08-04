@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 2 August 2018 at 10:45:48 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 3 August 2018 at 11:04:22 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 50!
+!provides: 'FEN' 1 51!
 SystemOrganization addCategory: #FEN!
 
 
@@ -599,6 +599,13 @@ threat: aCollection
 	
 	threat _ aCollection! !
 
+!Piece methodsFor: 'operating' stamp: 'dhn 8/3/2018 20:33:37'!
+isOnBoard: aPoint
+	"Answer whether aPoint is on the board"
+	
+	^ aPoint >= (1@1) and: aPoint <= (8@8)
+	! !
+
 !Piece methodsFor: 'operating' stamp: 'dhn 8/2/2018 19:12:05'!
 onBoard: aCollection
 	"Answer moves from aCollection which theoretically remain on the board"
@@ -614,6 +621,28 @@ printString
 	^ self color = 'b'
 		ifTrue: [self class symbol]
 		ifFalse: [self class symbol asUppercase]! !
+
+!Piece methodsFor: 'operating' stamp: 'dhn 8/3/2018 20:23:34'!
+seek: aRay
+	"Update move and threat based on aRay"
+	| done ix pos occupant |
+	
+	done _ false.
+	ix _ 0.
+	[done] whileFalse: [
+		ix _ ix + 1.
+		pos _ position + (aRay at: ix).
+		(self isOnBoard: pos)
+			ifTrue: [
+				occupant _ board pieces at: pos.
+				(occupant)
+					ifNil: [move add: (aRay at: ix)]
+					ifNotNil: [
+						occupant color = self color
+							ifFalse: [threat add: (aRay at: ix)].
+						done _ true]
+				]
+			ifFalse: [done _ true]]! !
 
 !Piece methodsFor: 'operating' stamp: 'dhn 8/2/2018 21:58:23'!
 setRange
@@ -795,6 +824,18 @@ type: aSymbol color: aString at: aCollection
 		col add: ((Smalltalk at: aSymbol) new: ea color: aString)].
 	^ col! !
 
+!Bishop methodsFor: 'operating' stamp: 'dhn 8/3/2018 20:38:25'!
+potential
+	"Determine the possible moves and threats from the current position"
+	
+	move _ OrderedCollection new.
+	threat _ OrderedCollection new.
+	self 
+		seek: Piece northeast;
+		seek: Piece southeast;
+		seek: Piece southwest;
+		seek: Piece northwest! !
+
 !Bishop methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:53:14'!
 scope
 	"Answer the theoretical scope of movement, relative to the current position"
@@ -883,6 +924,22 @@ symbol
 	
 	^ 'p'! !
 
+!Queen methodsFor: 'operating' stamp: 'dhn 8/3/2018 20:41:31'!
+potential
+	"Determine the possible moves and threats from the current position"
+	
+	move _ OrderedCollection new.
+	threat _ OrderedCollection new.
+	self 
+		seek: Piece north;
+		seek: Piece south;
+		seek: Piece east;
+		seek: Piece west;
+		seek: Piece northeast;
+		seek: Piece southeast;
+		seek: Piece southwest;
+		seek: Piece northwest! !
+
 !Queen methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:50:41'!
 scope
 	"Answer the theoretical scope of movement, relative to the current position"
@@ -894,6 +951,19 @@ symbol
 	"Answer the letter symbol for self"
 	
 	^ 'q'! !
+
+!Rook methodsFor: 'operating' stamp: 'dhn 8/3/2018 20:16:15'!
+potential
+	"Determine the possible moves and threats from the current position"
+	
+	move _ OrderedCollection new.
+	threat _ OrderedCollection new.
+	self 
+		seek: Piece north;
+		seek: Piece south;
+		seek: Piece east;
+		seek: Piece west
+		! !
 
 !Rook methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:51:33'!
 scope
