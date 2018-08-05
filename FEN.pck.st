@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 3 August 2018 at 11:04:22 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 4 August 2018 at 10:15:07 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 51!
+!provides: 'FEN' 1 52!
 SystemOrganization addCategory: #FEN!
 
 
@@ -154,12 +154,10 @@ Extract position records from a file and write an individual *.fen file for each
 !Pgn commentStamp: '<historical>' prior: 0!
 Chess Portable Game Notation (PGN).!
 
-!Piece commentStamp: '<historical>' prior: 0!
+!Piece commentStamp: 'dhn 8/4/2018 20:37:08' prior: 0!
 A chess piece with the following variables, relative to position:
 
-	scope - the maximum theoretical movement of the piece; a class method, not a variable
-
-	range - a proper subset of scope consisting of spaces actually on the board
+	range - the moves possible if it were the only piece on the board
 
 	move - a proper subset of range consisting of unoccupied, unblocked spaces
 
@@ -196,6 +194,33 @@ Progress new percent:  #(
 3 2
 ).
 !
+
+!Board methodsFor: 'initialization' stamp: 'dhn 8/4/2018 20:03:20'!
+fromFen: aString
+	"Place the chess pieces in their initial position based on sString"
+	| col i j pc |
+	
+	counter _ Count new.
+	col _ OrderedCollection new.
+	i _ j _ 1.
+	aString do: [:ea | 
+		ea isDigit 
+			ifTrue: [i _ i + ea digitValue]
+			ifFalse: [
+				ea = $/
+					ifTrue: [
+						j _ j + 1.
+						i _ 1]
+					ifFalse: [
+						pc _ (Board pieceTemplate at: ea) first.
+						pc position: i@j.
+						col add: pc.
+						i _ i + 1]]].
+	col do: [:ea |
+			ea board: self.
+			ea range: ea setRange].
+	pieces _ self organize: col.
+	pieces do: [:ea | ea ifNotNil: [ea potential]]! !
 
 !Board methodsFor: 'initialization' stamp: 'dhn 8/2/2018 22:04:41'!
 initialize
@@ -263,6 +288,26 @@ pieces: anObject
 	"Set the value of pieces"
 
 	pieces _ anObject! !
+
+!Board class methodsFor: 'initialization' stamp: 'dhn 8/4/2018 17:25:35'!
+pieceTemplate
+	"Translate a FEN piece character to a Piece template"
+	
+	^ Dictionary new
+		at: $r put: (Piece type: #Rook color: 'b' at: {0@0});
+		at: $R put: (Piece type: #Rook color: 'w' at: {0@0});
+		at: $n put: (Piece type: #Knight color: 'b' at: {0@0});
+		at: $N put: (Piece type: #Knight color: 'w' at: {0@0});
+		at: $b put: (Piece type: #Bishop color: 'b' at: {0@0});
+		at: $B put: (Piece type: #Bishop color: 'w' at: {0@0});
+		at: $q put: (Piece type: #Queen color: 'b' at: {0@0});
+		at: $Q put: (Piece type: #Queen color: 'w' at: {0@0});
+		at: $k put: (Piece type: #King color: 'b' at: {0@0});
+		at: $K put: (Piece type: #King color: 'w' at: {0@0});
+		at: $p put: (Piece type: #Pawn color: 'b' at: {0@0});
+		at: $P put: (Piece type: #Pawn color: 'w' at: {0@0});
+		yourself
+! !
 
 !ChessStream methodsFor: 'filtering' stamp: 'dhn 7/31/2018 16:45:13'!
 unBrace
@@ -622,7 +667,7 @@ printString
 		ifTrue: [self class symbol]
 		ifFalse: [self class symbol asUppercase]! !
 
-!Piece methodsFor: 'operating' stamp: 'dhn 8/3/2018 20:23:34'!
+!Piece methodsFor: 'operating' stamp: 'dhn 8/4/2018 19:31:19'!
 seek: aRay
 	"Update move and threat based on aRay"
 	| done ix pos occupant |
@@ -631,17 +676,19 @@ seek: aRay
 	ix _ 0.
 	[done] whileFalse: [
 		ix _ ix + 1.
-		pos _ position + (aRay at: ix).
-		(self isOnBoard: pos)
+		ix <= aRay size
 			ifTrue: [
-				occupant _ board pieces at: pos.
-				(occupant)
-					ifNil: [move add: (aRay at: ix)]
-					ifNotNil: [
-						occupant color = self color
-							ifFalse: [threat add: (aRay at: ix)].
-						done _ true]
-				]
+				pos _ position + (aRay at: ix).
+				(self isOnBoard: pos)
+					ifTrue: [
+						occupant _ board pieces at: pos.
+						(occupant)
+							ifNil: [move add: (aRay at: ix)]
+							ifNotNil: [
+								occupant color = self color
+									ifFalse: [threat add: (aRay at: ix)].
+								done _ true]]
+					ifFalse: [done _ true]]
 			ifFalse: [done _ true]]! !
 
 !Piece methodsFor: 'operating' stamp: 'dhn 8/2/2018 21:58:23'!
@@ -848,6 +895,22 @@ symbol
 	
 	^ 'b'! !
 
+!King methodsFor: 'operating' stamp: 'dhn 8/4/2018 21:24:56'!
+potential
+	"Determine the possible moves and threats from the current position"
+	
+	move _ OrderedCollection new.
+	threat _ OrderedCollection new.
+	self 
+		seek: {0@-1};
+		seek: {0@1};
+		seek: {1@0};
+		seek: {-1@0};
+		seek: {1@1};
+		seek: {1@-1};
+		seek: {-1@-1};
+		seek: {-1@1}! !
+
 !King methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:52:53'!
 scope
 	"Answer the theoretical scope of movement, relative to the current position"
@@ -868,6 +931,15 @@ symbol
 	"Answer the letter symbol for self"
 	
 	^ 'k'! !
+
+!Knight methodsFor: 'operating' stamp: 'dhn 8/4/2018 21:13:46'!
+potential
+	"Determine the possible moves and threats from the current position"
+	
+	move _ OrderedCollection new.
+	threat _ OrderedCollection new.
+	self try: self scope
+! !
 
 !Knight methodsFor: 'operating' stamp: 'dhn 8/2/2018 18:42:12'!
 scope
@@ -890,11 +962,44 @@ trimScope: aCollection
 	
 	^ aCollection select: [:ea | (board pieces at: ea) = nil]! !
 
+!Knight methodsFor: 'operating' stamp: 'dhn 8/4/2018 21:11:31'!
+try: aCollection
+	"Determine the possible moves and threats from the current position"
+	| pos occupant |
+	
+	aCollection do: [:ea |
+		pos _ position + ea.
+		(self isOnBoard: pos)
+			ifTrue: [
+				occupant _ board pieces at: pos.
+				(occupant notNil and: [occupant color ~= self color])
+					ifTrue: [threat add: ea]
+					ifFalse: [occupant ifNil: [move add: ea]]]]! !
+
 !Knight class methodsFor: 'definition' stamp: 'dhn 7/22/2018 17:16:36'!
 symbol
 	"Answer the letter symbol for self"
 	
 	^ 'n'! !
+
+!Pawn methodsFor: 'operating' stamp: 'dhn 8/4/2018 20:01:08'!
+potential
+	"Determine the possible moves and threats from the current position"
+	
+	move _ OrderedCollection new.
+	threat _ OrderedCollection new.
+	color = 'w'
+		ifTrue: [ "white pawn"
+			self rank = 7
+				ifTrue: [self try: {0@-1. 0@-2}]
+				ifFalse: [self try: {0@-1}].
+				self threaten: {-1@-1. 1@-1}]
+		ifFalse: [ "black pawn"
+			self rank = 2
+				ifTrue: [self try: {0@1. 0@2}]
+				ifFalse: [self try: {0@1}].
+				self threaten: {-1@1. 1@1}]
+! !
 
 !Pawn methodsFor: 'operating' stamp: 'dhn 8/2/2018 14:52:10'!
 scope
@@ -917,6 +1022,35 @@ threat
 	^ color = 'w'
 		ifTrue: [OrderedCollection with: -1@-1 with: 1@-1]
 		ifFalse: [OrderedCollection with: -1@1 with: 1@1]! !
+
+!Pawn methodsFor: 'operating' stamp: 'dhn 8/4/2018 19:58:15'!
+threaten: aCollection
+	"Update threat based on aCollection"
+	| pos occupant |
+	
+	aCollection do: [:ea |
+		pos _ position + ea.
+				(self isOnBoard: pos)
+					ifTrue: [
+						occupant _ board pieces at: pos.
+						(occupant) ifNotNil: [
+							occupant color = self color
+								ifFalse: [threat add: ea]]]]
+! !
+
+!Pawn methodsFor: 'operating' stamp: 'dhn 8/4/2018 21:03:55'!
+try: aCollection
+	"Determine the possible moves from the current position"
+	| pos occupant |
+	
+	aCollection do: [:ea |
+		pos _ position + ea.
+		(self isOnBoard: pos)
+			ifTrue: [
+				occupant _ board pieces at: pos.
+				(occupant) 
+					ifNil: [move add: ea]
+					ifNotNil: [^ nil]]]! !
 
 !Pawn class methodsFor: 'definition' stamp: 'dhn 7/22/2018 17:13:16'!
 symbol
