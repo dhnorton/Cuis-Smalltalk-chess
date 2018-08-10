@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 4 August 2018 at 10:15:07 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 9 August 2018 at 10:33:22 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 52!
+!provides: 'FEN' 1 59!
 SystemOrganization addCategory: #FEN!
 
 
@@ -42,6 +42,16 @@ Object subclass: #InFen
 	category: 'FEN'!
 !classDefinition: 'InFen class' category: #FEN!
 InFen class
+	instanceVariableNames: ''!
+
+!classDefinition: #Move category: #FEN!
+Object subclass: #Move
+	instanceVariableNames: 'side piece id take target type'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'Move class' category: #FEN!
+Move class
 	instanceVariableNames: ''!
 
 !classDefinition: #Pgn category: #FEN!
@@ -150,6 +160,16 @@ Extract position records from a file and write an individual *.fen file for each
 "
 (InFen new: 'chess/m8n/m8n2.txt') write.
 "!
+
+!Move commentStamp: 'dhn 8/9/2018 18:09:51' prior: 0!
+Characteristics of a chess move. Instance variables as follows:
+
+side - 'w' or 'b', white or black
+piece - a symbol representing the piece making the move, including #Long and #Short for 'O-O-O' and 'O-O'
+id - a further qualifier if needed to distinguish the piece
+take - one of nil, 'x'
+target - the PGN identification of the destination, a1...h8
+type - one of nil, '+', or '#'!
 
 !Pgn commentStamp: '<historical>' prior: 0!
 Chess Portable Game Notation (PGN).!
@@ -521,6 +541,131 @@ setup
 	DirectoryEntry roots.  "take no chances: ensure the base directory is '/' "
 	x directory: DirectoryEntry currentDirectory.  "now at /home/<user>"
 	^ x! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 16:34:24'!
+id
+	"Answer the value of id"
+
+	^ id! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 16:34:24'!
+id: anObject
+	"Set the value of id"
+
+	id _ anObject! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 16:34:24'!
+piece
+	"Answer the value of piece"
+
+	^ piece! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 16:34:24'!
+piece: anObject
+	"Set the value of piece"
+
+	piece _ anObject! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 17:00:26'!
+side
+	"Answer the value of side"
+
+	^ side! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 17:00:26'!
+side: anObject
+	"Set the value of side"
+
+	side _ anObject! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 18:09:02'!
+take
+	"Answer the value of take"
+
+	^ take! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 18:09:02'!
+take: anObject
+	"Set the value of take"
+
+	take _ anObject! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 16:34:24'!
+target
+	"Answer the value of target"
+
+	^ target! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 16:34:24'!
+target: anObject
+	"Set the value of target"
+
+	target _ anObject! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 16:34:24'!
+type
+	"Answer the value of type"
+
+	^ type! !
+
+!Move methodsFor: 'accessing' stamp: 'dhn 8/9/2018 16:34:24'!
+type: anObject
+	"Set the value of type"
+
+	type _ anObject! !
+
+!Move class methodsFor: 'instance creation' stamp: 'dhn 8/9/2018 22:30:56'!
+new: aString wOrB: aChar
+	"Answer an instance created by parsing aString"
+	| mov ios ch row col |
+	
+	mov _ self basicNew.
+	mov side: aChar.
+	aString = 'O-O' ifTrue: [mov piece: #Short. ^ mov].
+	aString = 'O-O-O' ifTrue: [mov piece: #Long. ^ mov].
+	ios _ ReadStream on: aString reversed.
+	ios position: 0.
+	ch _ ios next.
+	(#($+ $#) includes: ch)
+		ifTrue: [mov type: ch. ch _ ios next].
+	row _ ch.
+	col _ ios next.
+	mov target: col asString, row asString.
+	ios atEnd ifTrue: [
+		mov
+			piece: #Pawn;
+			id: col.
+		^mov].
+	ch _ ios next.
+	ch = $x 
+		ifTrue: [
+			mov take: ch. 
+			ch _ ios next].
+	(self pieceIds includes: ch)
+		ifTrue: [mov piece: (self symbols at: ch)]
+		ifFalse: [
+			mov
+				id: ch;
+				piece: (self symbols at: ios next)].
+	^ mov! !
+
+!Move class methodsFor: 'instance creation' stamp: 'dhn 8/9/2018 21:41:17'!
+pieceIds
+	"Answer the abbreviations for the major pieces"
+	
+	^ #($K $Q $B $N $R)! !
+
+!Move class methodsFor: 'instance creation' stamp: 'dhn 8/9/2018 18:54:16'!
+symbols
+	"Answer the symbol for the piece in a move"
+	
+	^ Dictionary new
+		at: $K put: #King;
+		at: $Q put: #Queen;
+		at: $B put: #Bishop;
+		at: $N put: #Knight;
+		at: $R put: #Rook;
+		yourself		! !
 
 !Pgn methodsFor: 'parsing' stamp: 'dhn 8/2/2018 14:11:59'!
 movesFrom: aString
