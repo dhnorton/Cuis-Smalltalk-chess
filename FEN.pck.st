@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 11 September 2018 at 8:34:05 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 11 September 2018 at 10:07:08 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 60!
+!provides: 'FEN' 1 61!
 SystemOrganization addCategory: #FEN!
 
 
@@ -368,7 +368,7 @@ firstMoves
 	col do: [:ea | tree add: ea first]	
 ! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 20:19:18'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 22:01:41'!
 initialize
 	"Establish the Chess Openings database"
 	
@@ -376,7 +376,8 @@ initialize
 	self 
 		firstMoves;
 		kingsGambit;
-		queensGambit! !
+		queensGambit;
+		sicilian! !
 
 !OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 18:36:09'!
 kingsGambit
@@ -473,6 +474,97 @@ queensGambit
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3'		'Queen''s Gambit Declined, Orthodox Defense, Bd3 line')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4 9 Bxc4 Nd5'		'Queen''s Gambit Declined, Orthodox Defense, Bd3 line 2')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4'		'Queen''s Gambit Declined, Orthodox Defense, Classical')
+	).
+	col do: [:ea |
+		tree add: ea first.
+		tree at: ea first put: ea second]! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 22:06:14'!
+sicilian
+	"Add Sicilian openings to tree"
+	| col |
+	
+	col _ #(
+		#('1 e4 c5'																'Sicilian')
+		#('1 e4 c5 2 f4'															'Sicilian, 2.f4')
+		#('1 e4 c5 2 d4'															'Sicilian, 2.d4')
+		#('1 e4 c5 2 c3'															'Sicilian, Alapin')
+		#('1 e4 c5 2 Nc3'														'Sicilian, Closed')
+		#('1 e4 c5 2 Nc3 Nc6 3 g3'												'Sicilian, Closed 2')
+		#('1 e4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 d3 d6'					'Sicilian, Closed 3')
+		#('1 e4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 d3 d6 6 Be3'			'Sicilian, Closed, 6.Be3')
+		#('1 e4 c5 2 Nf3'														'Sicilian 2')
+		#('1 e4 c5 2 Nf3 a6'														'Sicilian, O''Kelly Variation')
+		#('1 e4 c5 2 Nf3 Nf6'													'Sicilian, Nimzovich-Rubinstein')
+		#('1 e4 c5 2 Nf3 Nc6'													'Sicilian 3')
+		#('1 e4 c5 2 Nf3 Nc6 3 Bb5 g6'										'Sicilian, Rossolimo Variation')
+		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 e5'							'Sicilian 4')
+		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4'								'Sicilian 5')
+		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 Nxc6'					'Sicilian, Accelerated Fianchetto')
+		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 Nc3 Bg7 6 Be3 Nf6 7 Bc4'		'Sicilian, Accelerated Fianchetto, Modern Variation with Bc4')
+		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 c4'					'Sicilian, Accelerated Fianchetto 2')
+		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 c4 Bg7'				'Sicilian, Accelerated Fianchetto 3')
+		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 c4 Bg7 6 Be3'		'Sicilian, Accelerated Fianchetto, Maroczy Bind, 6.Be3')
+		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 c4 Bg7 6 Be3 Nf6 7 Nc3 Ng4'		'Sicilian, Accelerated Fianchetto, Breyer Variation')
+		#('1 e4 c5 2 Nf3 e6'													'Sicilian 6')
+		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 a6'							'Sicilian, Kan')
+		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 a6 5 Bd3'					'Sicilian, Kan 2')
+		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 a6 5 Nc3'					'Sicilian, Kan, 5.Nc3')
+		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6'							'Sicilian 7')
+		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6 5 Nc3'					'Sicilian, Taimanov')
+		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6 5 Nc3 a6'				'Sicilian, Taimanov Variation')
+		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6 5 Nc3 Qc7'				'Sicilian, Taimanov (Bastrikov)  Variation')
+		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6 5 Nc3 Qc7 6 Be3'		'Sicilian, Taimanov  Variation 2')
+		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6 5 Nc3 Qc7 6 Be3 a6 7 Be2'		'Sicilian, Taimanov  Variation 3')
+		#('1 e4 c5 2 Nf3 d6'													'Sicilian 8')
+		#('1 e4 c5 2 Nf3 d6 3 Bb5+'											'Sicilian, Canal-Sokolsky (Rossolimo) Attack')
+		#('1 e4 c5 2 Nf3 d6 3 Bb5+ Bd7'										'Sicilian, Canal-Sokolsky (Rossolimo) Attack 2')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Qxd4'								'Sicilian 9')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4'								'Sicilian 10')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 f3 e5 6 Bb5+'		'Sicilian, Prins Variation, Venice Attack')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3'					'Sicilian 11')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bc4'		'Sicilian 12')
+		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 d6 6 Be2'		'Sicilian 13')
+		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 d6 6 Be2 e5 7 Nb3'		'Sicilian, Boleslavsky Variation, 7.Nb3')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5'		'Sicilian, Richter-Rauzer')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 Bd7 7 Qd2'		'Sicilian, Richter-Rauzer, Larsen Variation, 7.Qd2')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6'	'Sicilian, Richter-Rauzer 2')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2'		'Sicilian, Richter-Rauzer Attack')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 Be7 8 O-O-O O-O 9 f4'		'Sicilian, Richter-Rauzer Attack 2')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 Be7 8 O-O-O O-O 9 f4 Nxd4 10 Qxd4'		'Sicilian, Richter-Rauzer Attack, 7...Be7 Defense, 9...Nxd4')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 a6'		'Sicilian, Richter-Rauzer Attack, 7...a6')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 a6 8 O-O-O Bd7'		'Sicilian, Richter-Rauzer Attack, 7...a6 Defense, 8...Bd7')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 a6 8 O-O-O Bd7 9 f4 Be7'		'Sicilian, Richter-Rauzer Attack, 7...a6 Defense, 9...Be7')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 a6 8 O-O-O Bd7 9 f4 Be7 10 Nf3 b5 11 Bxf6'		'Sicilian, Richter-Rauzer Attack, 7...a6 Defense, 11.Bxf6')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6'				'Sicilian, Dragon Variation')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 f4'			'Sicilian, Levenfish Variation')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3'		'Sicilian, Dragon')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 Be2 Nc6 8 O-O'		'Sicilian, Dragon, Classical')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 Be2 Nc6 8 O-O O-O 9 Nb3'		'Sicilian, Dragon, Classical 2')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 f3'		'Sicilian, Dragon, Yugoslav Attack')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 f3 O-O'		'Sicilian, Dragon, Yugoslav Attack 2')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 f3 O-O 8 Qd2 Nc6 9 Bc4'		'Sicilian, Dragon, Yugoslav Attack 3')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 f3 O-O 8 Qd2 Nc6 9 Bc4 Bd7 10 O-O-O'		'Sicilian, Dragon, Yugoslav Attack, 10.castle long')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 f3 O-O 8 Qd2 Nc6 9 Bc4 Bd7 10 O-O-O Qa5 11 Bb3 Rfc8 12 h4'		'Sicilian, Dragon, Yugoslav Attack, 12.h4')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6'				'Sicilian, Scheveningen')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 g4'			'Sicilian, Scheveningen, Keres Attack')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 f4'			'Sicilian, Scheveningen 2')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Be2'		'Sicilian 14')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Be2 a6'	'Sicilian, Scheveningen 3')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Be2 a6 7 O-O Qc7 8 f4 Nc6'		'Sicilian, Scheveningen, Classical')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Bc4'		'Sicilian, Fischer-Sozin Attack')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Bc4 a6 7 Bb3 b5'		'Sicilian, Fischer-Sozin with ...a6 and ...b5')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Bc4 Nc6'	'Sicilian, Fischer-Sozin Attack 2')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Bc4 Nc6 7 Be3'		'Sicilian, Najdorf')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 g3'			'Sicilian, Najdorf, Zagreb (Fianchetto) Variation')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Be2'		'Sicilian, Najdorf, Opocensky Variation')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 f4'			'Sicilian, Najdorf, 6.f4')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5'		'Sicilian, Najdorf 2')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6'	'Sicilian, Najdorf, 6...e6')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4'		'Sicilian, Najdorf 3')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Qb6'		'Sicilian, Najdorf 4')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Be7'		'Sicilian, Najdorf 5')
+		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Be7 8 Qf3 Qc7 9 O-O-O Nbd7'		'Sicilian, Najdorf, 7...Be7 Main line')
 	).
 	col do: [:ea |
 		tree add: ea first.
