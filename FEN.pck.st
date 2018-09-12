@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 11 September 2018 at 10:07:08 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 12 September 2018 at 1:41:30 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 61!
+!provides: 'FEN' 1 62!
 SystemOrganization addCategory: #FEN!
 
 
@@ -368,7 +368,7 @@ firstMoves
 	col do: [:ea | tree add: ea first]	
 ! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 22:01:41'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 13:18:09'!
 initialize
 	"Establish the Chess Openings database"
 	
@@ -377,7 +377,8 @@ initialize
 		firstMoves;
 		kingsGambit;
 		queensGambit;
-		sicilian! !
+		sicilian;
+		ruyLopez! !
 
 !OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 18:36:09'!
 kingsGambit
@@ -479,6 +480,56 @@ queensGambit
 		tree add: ea first.
 		tree at: ea first put: ea second]! !
 
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 13:17:40'!
+ruyLopez
+	"Add Ruy Lopez openings to tree"
+	| col |
+	
+	col _ #(
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5'													'Ruy Lopez')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 d6'													'Ruy Lopez, Old Steinitz Defense')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 f5'													'Ruy Lopez, Schliemann Defense')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Bc5'													'Ruy Lopez, Classical')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Nf6'													'Ruy Lopez, Berlin Defense')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Nf6 4 O-O d6'										'Ruy Lopez 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Nf6 4 O-O Nxe4'										'Ruy Lopez 3')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Bxc6'										'Ruy Lopez, Exchange')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Bxc6 dc 5 O-O f6'										'Ruy Lopez, Exchange, Gligoric Variation')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4'										'Ruy Lopez 4')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6'										'Ruy Lopez 5')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 O-O'										'Ruy Lopez, Modern Steinitz Defense, 5.O-O')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 Bxc6+ bxc6 6 d4'										'Ruy Lopez, Modern Steinitz Defense')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3'										'Ruy Lopez, Modern Steinitz Defense 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3 Bd7'										'Ruy Lopez, Modern Steinitz Defense 3')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3 Bd7 6 d4 g6'										'Ruy Lopez, Modern Steinitz Defense, Fianchetto Variation')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6'										'Ruy Lopez 6')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O'										'Ruy Lopez 7')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O d6'										'Ruy Lopez, Steinitz Defense Deferred')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4'										'Ruy Lopez, Open')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6 9 Qe2'										'Ruy Lopez, Open, Howell Attack')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6 9 c3'										'Ruy Lopez, Open')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6'									'Ruy Lopez, Open 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7'									'Ruy Lopez, Closed')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Bxc6 dxc6'									'Ruy Lopez, Exchange Variation Doubly Deferred (DERLD)')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Qe2'									'Ruy Lopez, Worrall Attack')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 d6'									'Ruy Lopez 8')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3'									'Ruy Lopez 9')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d5'									'Ruy Lopez, Marshall')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6'									'Ruy Lopez, Closed')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 d4'							'Ruy Lopez, Closed 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3'							'Ruy Lopez, Closed 3')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 h6'							'Ruy Lopez, Smyslov Defense')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Nb8'							'Ruy Lopez, Breyer Defense')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Nb8 10 d4'							'Ruy Lopez, Closed, Breyer')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2'							'Ruy Lopez, Closed 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7'			'Ruy Lopez, Closed, Chigorin')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7 12 Nbd2 Nc6'			'Ruy Lopez, Closed, Chigorin 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7 12 Nbd2 cxd4 13 cxd4'			'Ruy Lopez, Closed, Chigorin, 12...cd')
+	).
+	col do: [:ea |
+		tree add: ea first.
+		tree at: ea first put: ea second]! !
+
 !OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 22:06:14'!
 sicilian
 	"Add Sicilian openings to tree"
@@ -569,6 +620,18 @@ sicilian
 	col do: [:ea |
 		tree add: ea first.
 		tree at: ea first put: ea second]! !
+
+!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 13:28:17'!
+tree
+	"Answer the value of tree"
+
+	^ tree! !
+
+!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 13:28:17'!
+tree: anObject
+	"Set the value of tree"
+
+	tree _ anObject! !
 
 !ChessStream methodsFor: 'filtering' stamp: 'dhn 7/31/2018 16:45:13'!
 unBrace
