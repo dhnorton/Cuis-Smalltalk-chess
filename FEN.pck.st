@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3384] on 9 August 2018 at 10:33:22 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 11 September 2018 at 8:34:05 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 59!
+!provides: 'FEN' 1 60!
 SystemOrganization addCategory: #FEN!
 
 
@@ -13,6 +13,16 @@ ActiveModel subclass: #Board
 !classDefinition: 'Board class' category: #FEN!
 Board class
 	instanceVariableNames: ''!
+
+!classDefinition: #OpeningModel category: #FEN!
+ActiveModel subclass: #OpeningModel
+	instanceVariableNames: 'tree'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'OpeningModel class' category: #FEN!
+OpeningModel class
+	instanceVariableNames: 'tree'!
 
 !classDefinition: #ChessStream category: #FEN!
 ReadStream subclass: #ChessStream
@@ -147,6 +157,9 @@ Progress class
 
 !Board commentStamp: '<historical>' prior: 0!
 The chess board model.!
+
+!OpeningModel commentStamp: '<historical>' prior: 0!
+A model for chess openings.!
 
 !ChessStream commentStamp: '<historical>' prior: 0!
 A stream for removing notes and rankings from Chess Portable Game Notation (PGN).!
@@ -328,6 +341,142 @@ pieceTemplate
 		at: $P put: (Piece type: #Pawn color: 'w' at: {0@0});
 		yourself
 ! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 20:18:30'!
+firstMoves
+	"Add all first moves possible by white to tree"
+	| col |
+	
+	col _ #(
+		#('1 a3')
+		#('1 a4')
+		#('1 b3')
+		#('1 b4')
+		#('1 c3')
+		#('1 c4')
+		#('1 d3')
+		#('1 d4')
+		#('1 e3')
+		#('1 e4')
+		#('1 f3')
+		#('1 f4')
+		#('1 g3')
+		#('1 g4')
+		#('1 h3')
+		#('1 h4')
+	).
+	col do: [:ea | tree add: ea first]	
+! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 20:19:18'!
+initialize
+	"Establish the Chess Openings database"
+	
+	tree _ Trie new.
+	self 
+		firstMoves;
+		kingsGambit;
+		queensGambit! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 18:36:09'!
+kingsGambit
+	"Add King's Gambit openings to tree"
+	| col |
+	
+	col _ #(
+		#('1 e4 e5 2 f4'									'King''s Gambit Declined')
+		#('1 e4 e5 2 f4 d5'								'King''s Gambit Declined, Falkbeer Counter Gambit')
+		#('1 e4 e5 2 f4 d5 3 exd5 e4 4 d3 Nf6'		'King''s Gambit Declined, Falkbeer Counter 2')
+		#('1 e4 e5 2 f4 exf4'							'King''s Gambit Accepted')
+		#('1 e4 e5 2 f4 exf4 3 Nf3'					'King''s Gambit Accepted 2')
+		#('1 e4 e5 2 f4 exf4 3 Nf3 Be7'				'King''s Gambit Accepted, Cunningham')
+		#('1 e4 e5 2 f4 exf4 3 Nf3 d5'				'King''s Gambit Accepted, Abbazia Defense')
+		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Nc3'			'King''s Gambit Accepted 3')
+		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Bc4 Bg7'	'King''s Gambit Accepted 4')
+		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 h4'			'King''s Gambit Accepted 5')
+	).
+	col do: [:ea |
+		tree add: ea first.
+		tree at: ea first put: ea second]! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 20:30:23'!
+queensGambit
+	"Add Queen's Gambit openings to tree"
+	| col |
+	
+	col _ #(
+		#('1 d4 d5'									'Queen''s Pawn Game')
+		#('1 d4 d5 2 Nc3 Nf6 3 Bg5'				'Richter-Veresov Attack')
+		#('1 d4 d5 2 Nf3'				'Queen''s Pawn Game 2')
+		#('1 d4 d5 2 Nf3 Nf6 3 Bg5'				'Torre Attack (Tartakower Variation)')
+		#('1 d4 d5 2 Nf3 Nf6 3 e3'				'Queen''s Pawn Game 3')
+		#('1 d4 d5 2 Nf3 Nf6 3 e3 e6'				'Queen''s Pawn Game 4')
+		#('1 d4 d5 2 c4'				'Queen''s Gambit Declined')
+		#('1 d4 d5 2 c4 Nc6'				'Queen''s Gambit Declined, Chigorin Defense')
+		#('1 d4 d5 2 c4 e5'				'Queen''s Gambit Declined, Albin Counter Gambit')
+		#('1 d4 d5 2 c4 e5 3 dxe5 d4 4 Nf3 Nc6 5 g3'	'Queen''s Gambit Declined, Albin Counter Gambit, 5.g3')
+		#('1 d4 d5 2 c4 c6'	'Queen''s Gambit Declined Slav')
+		#('1 d4 d5 2 c4 c6 3 Nf3'	'Queen''s Gambit Declined Slav 2')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 e3 Bf5'	'Queen''s Gambit Declined Slav 3')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 cxd5 cxd5'	'Queen''s Gambit Declined Slav, Exchange Variation')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 cxd5 cxd5 5 Nc3 Nc6 6 Bf4 Bf5'	'Queen''s Gambit Declined Slav, Exchange Variation 2')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3'	'Queen''s Gambit Declined Slav 4')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3 dxc4 5 a4'	'Queen''s Gambit Declined Slav 5')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3 dxc4 5 a4 Bf5'		'Queen''s Gambit Declined Slav 6')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3 dxc4 5 a4 Bf5 6 e3 e6 7 Bxc4 Bb4 8 O-O O-O 9 Qe2'		'Queen''s Gambit Declined Slav, Dutch 2')
+		#('1 d4 d5 2 c4 dxc4'		'Queen''s Gambit Accepted')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3'		'Queen''s Gambit Accepted 2')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 a6 4 e3 Bg4 5 Bxc4 e6 6 d5'		'Queen''s Gambit Accepted 3')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6'		'Queen''s Gambit Accepted 3')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 Nc3'		'Queen''s Gambit Accepted 4')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3'		'Queen''s Gambit Accepted 5')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6'		'Queen''s Gambit Accepted 6')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6'		'Queen''s Gambit Accepted, Classical')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6 7 Qe2'		'Queen''s Gambit Accepted, Classical 2')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6 7 Qe2 b5 8 Bb3 Bb7'		'Queen''s Gambit Accepted, Classical 3')
+		#('1 d4 d5 2 c4 e6'		'Queen''s Gambit Declined 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3'		'Queen''s Gambit Declined 3')
+		#('1 d4 d5 2 c4 e6 3 Nc3 c5'		'Queen''s Gambit Declined, Tarrasch')
+		#('1 d4 d5 2 c4 e6 3 Nc3 c5 4 cxd5 exd5 5 Nf3 Nc6 6 g3'		'Queen''s Gambit Declined, Tarrasch 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3 c5 4 cxd5 exd5 5 Nf3 Nc6 6 g3 Nf6 7 Bg2 Be7'		'Queen''s Gambit Declined, Tarrasch 3')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6'		'Queen''s Gambit Declined 4')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 cxd5 exd5 5 Bg5 c6 6 Qc2'		'Queen''s Gambit Declined, Exchange, Positional line, 6.Qc2')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3'		'Queen''s Gambit Declined 5')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 Bb4'		'Queen''s Gambit Declined, Ragozin Variation')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 Bb4 5 Bg5 dxc4'		'Queen''s Gambit Declined, Ragozin, Vienna Variation')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5'		'Queen''s Gambit Declined, Semi-Tarrasch')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5 5 cxd5'		'Queen''s Gambit Declined, Semi-Tarrasch 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5 5 cxd5 Nxd5 6 e3 Nc6 7 Bd3'		'Queen''s Gambit Declined, Semi-Tarrasch, 7.Bd3')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6'		'Queen''s Gambit Declined, Semi-Slav')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 Bg5 dxc4'		'Queen''s Gambit Declined, Semi-Slav 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3'		'Queen''s Gambit Declined, Semi-Slav 3')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3'		'Queen''s Gambit Declined, Semi-Slav 4')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3 dxc4 7 Bxc4'		'Queen''s Gambit Declined, Semi-Slav 5')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3 dxc4 7 Bxc4 b5 8 Bd3 a6'		'Queen''s Gambit Declined, Meran')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3 dxc4 7 Bxc4 b5 8 Bd3 a6 9 e4 c5 10 e5 cxd4 11 Nxb5'		'Queen''s Gambit Declined, Meran 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5'		'Queen''s Gambit Declined 6')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Nbd7'		'Queen''s Gambit Declined 7')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Nbd7 5 e3 c6 6 Nf3'		'Queen''s Gambit Declined 8')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7'		'Queen''s Gambit Declined 9')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Rc1'		'Queen''s Gambit Declined, Anti-Neo-Orthodox Variation')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3'		'Queen''s Gambit Declined 10')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 h6 7 Bh4'		'Queen''s Gambit Declined 11')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 h6 7 Bh4 Ne4 8 Bxe7 Qxe7'		'Queen''s Gambit Declined, Lasker Defense')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 h6 7 Bh4 b6'		'Queen''s Gambit Declined, Tartakower (Makagonov-Bondarevsky) System')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 h6 7 Bh4 b6 8 cxd5 Nxd5'		'Queen''s Gambit Declined, Tartakower')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7'		'Queen''s Gambit Declined, Orthodox Defense')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Qc2'		'Queen''s Gambit Declined, Orthodox, Rubinstein Attack')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Qc2 c5 8 cxd5'		'Queen''s Gambit Declined, Orthodox, Rubinstein Attack 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1'		'Queen''s Gambit Declined, Orthodox Defense 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Qc2'		'Queen''s Gambit Declined, Orthodox, Rubinstein Attack 3')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Qc2 a6 9 cxd5'		'Queen''s Gambit Declined, Orthodox, Rubinstein Attack, Main line')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3'		'Queen''s Gambit Declined, Orthodox Defense, Bd3 line')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4 9 Bxc4 Nd5'		'Queen''s Gambit Declined, Orthodox Defense, Bd3 line 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4'		'Queen''s Gambit Declined, Orthodox Defense, Classical')
+	).
+	col do: [:ea |
+		tree add: ea first.
+		tree at: ea first put: ea second]! !
 
 !ChessStream methodsFor: 'filtering' stamp: 'dhn 7/31/2018 16:45:13'!
 unBrace
