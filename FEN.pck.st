@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 3:24:59 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 7:43:09 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 67!
+!provides: 'FEN' 1 69!
 SystemOrganization addCategory: #FEN!
 
 
@@ -383,7 +383,7 @@ firstMoves
 	col do: [:ea | tree add: ea first]	
 ! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 14:09:02'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 18:11:58'!
 initialize
 	"Establish the Chess Openings database"
 	
@@ -391,6 +391,7 @@ initialize
 	listCollection _ OrderedCollection new.
 	simple _ OrderedCollection new.
 	tree _ Trie new.
+	self halt.
 	self 
 		firstMoves;
 		treeAdd: self kingsGambit;
@@ -647,6 +648,12 @@ treeAdd: aCollection
 		tree add: ea first.
 		tree at: ea first put: ea second]! !
 
+!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/14/2018 18:24:29'!
+listCollection
+	"Answer the value of listCollection"
+
+	^ listCollection! !
+
 !OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 17:30:14'!
 lookup
 	"Answer the value of lookup"
@@ -677,7 +684,7 @@ openings
 
 	^ listCollection! !
 
-!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 14:14:39'!
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 15:36:31'!
 openingsFor: aString
 	"Search for openings which begin with aString"
 	
@@ -689,7 +696,7 @@ openingsFor: aString
 				ifTrue: [
 					ky _ ea copyFrom: 1 to: query size.
 					ky = query
-						ifTrue: [listCollection add: ea]]].
+						ifTrue: [listCollection add: (lookup keyAtValue: ea)]]].
 	self openingsIndex: 0! !
 
 !OpeningModel methodsFor: 'operating' stamp: 'dhn 9/12/2018 15:56:01'!
@@ -699,21 +706,22 @@ openingsIndex
 	^ openingsIndex ifNil: [openingsIndex _ 0]. 	"nil is unacceptable during model initialization"
 ! !
 
-!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/12/2018 17:36:26'!
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 18:10:23'!
 openingsIndex: anObject
 	"Set the value of openingsIndex"
 
 	openingsIndex _ anObject.
 	anObject > 0
-		ifTrue: [self selectedOpening: (self openings at: anObject)].
-	self triggerEvent: #openingChange! !
+		ifTrue: [
+			self selectedOpening: anObject.
+			self triggerEvent: #openingChange]! !
 
-!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 14:53:28'!
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 15:42:01'!
 reset
 	"Rest the receiver to its original state"
 	
 	listCollection _ OrderedCollection new.
-	simple do: [:ea | listCollection add: (lookup at: ea)].
+	simple do: [:ea | listCollection add: (lookup keyAtValue: ea)].
 	self openingsIndex: 0! !
 
 !OpeningModel methodsFor: 'operating' stamp: 'dhn 9/12/2018 16:07:28'!
@@ -800,14 +808,14 @@ changeList
 
 	listPane updateList! !
 
-!OpeningView methodsFor: 'updating' stamp: 'dhn 9/12/2018 17:31:13'!
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/14/2018 18:25:54'!
 newText
 	"Set the contents of the text pane"
 	"note that the textPane model differs from the model for this view"
 
 	textPane model actualContents: (
 		model openingsIndex > 0
-			ifTrue: [model lookup at: model selectedOpening] 	
+			ifTrue: [model lookup at: (model listCollection at: model selectedOpening)]
 			ifFalse: [''])! !
 
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/14/2018 15:24:23'!
