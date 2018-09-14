@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 12 September 2018 at 1:41:30 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 12:45:25 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 62!
+!provides: 'FEN' 1 66!
 SystemOrganization addCategory: #FEN!
 
 
@@ -16,7 +16,7 @@ Board class
 
 !classDefinition: #OpeningModel category: #FEN!
 ActiveModel subclass: #OpeningModel
-	instanceVariableNames: 'tree'
+	instanceVariableNames: 'tree openingsIndex selectedOpening lookup query simple'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'FEN'!
@@ -32,6 +32,16 @@ ReadStream subclass: #ChessStream
 	category: 'FEN'!
 !classDefinition: 'ChessStream class' category: #FEN!
 ChessStream class
+	instanceVariableNames: ''!
+
+!classDefinition: #OpeningView category: #FEN!
+WorkspaceWindow subclass: #OpeningView
+	instanceVariableNames: 'textPane searchString listPane'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'OpeningView class' category: #FEN!
+OpeningView class
 	instanceVariableNames: ''!
 
 !classDefinition: #Count category: #FEN!
@@ -163,6 +173,11 @@ A model for chess openings.!
 
 !ChessStream commentStamp: '<historical>' prior: 0!
 A stream for removing notes and rankings from Chess Portable Game Notation (PGN).!
+
+!OpeningView commentStamp: '<historical>' prior: 0!
+A view for retrieving chess openings.
+
+OpeningView open.!
 
 !Count commentStamp: '<historical>' prior: 0!
 A counter with increment and reset methods.!
@@ -368,24 +383,32 @@ firstMoves
 	col do: [:ea | tree add: ea first]	
 ! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 13:18:09'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 12:42:42'!
 initialize
 	"Establish the Chess Openings database"
 	
+	simple _ OrderedCollection new.
 	tree _ Trie new.
 	self 
 		firstMoves;
-		kingsGambit;
-		queensGambit;
-		sicilian;
-		ruyLopez! !
+		treeAdd: self kingsGambit;
+		treeAdd: self queensGambit;
+		treeAdd: self sicilian;
+		treeAdd: self ruyLopez.
+		
+	lookup _ Dictionary new.	
+	self
+		lookupAdd: self kingsGambit;
+		lookupAdd: self queensGambit;
+		lookupAdd: self sicilian;
+		lookupAdd: self ruyLopez.
+! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 18:36:09'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:00:52'!
 kingsGambit
-	"Add King's Gambit openings to tree"
-	| col |
+	"Answer the King's Gambit openings"
 	
-	col _ #(
+	^ #(
 		#('1 e4 e5 2 f4'									'King''s Gambit Declined')
 		#('1 e4 e5 2 f4 d5'								'King''s Gambit Declined, Falkbeer Counter Gambit')
 		#('1 e4 e5 2 f4 d5 3 exd5 e4 4 d3 Nf6'		'King''s Gambit Declined, Falkbeer Counter 2')
@@ -396,70 +419,72 @@ kingsGambit
 		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Nc3'			'King''s Gambit Accepted 3')
 		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Bc4 Bg7'	'King''s Gambit Accepted 4')
 		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 h4'			'King''s Gambit Accepted 5')
-	).
-	col do: [:ea |
-		tree add: ea first.
-		tree at: ea first put: ea second]! !
+	)! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 20:30:23'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:21:50'!
+lookupAdd: aCollection
+	"Add openings in aCollection to lookup"
+
+	aCollection do: [:ea | 	lookup at: ea second put: ea first]! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:08:29'!
 queensGambit
-	"Add Queen's Gambit openings to tree"
-	| col |
+	"Answer the Queen's Gambit openings"
 	
-	col _ #(
-		#('1 d4 d5'									'Queen''s Pawn Game')
-		#('1 d4 d5 2 Nc3 Nf6 3 Bg5'				'Richter-Veresov Attack')
-		#('1 d4 d5 2 Nf3'				'Queen''s Pawn Game 2')
-		#('1 d4 d5 2 Nf3 Nf6 3 Bg5'				'Torre Attack (Tartakower Variation)')
-		#('1 d4 d5 2 Nf3 Nf6 3 e3'				'Queen''s Pawn Game 3')
-		#('1 d4 d5 2 Nf3 Nf6 3 e3 e6'				'Queen''s Pawn Game 4')
-		#('1 d4 d5 2 c4'				'Queen''s Gambit Declined')
-		#('1 d4 d5 2 c4 Nc6'				'Queen''s Gambit Declined, Chigorin Defense')
-		#('1 d4 d5 2 c4 e5'				'Queen''s Gambit Declined, Albin Counter Gambit')
-		#('1 d4 d5 2 c4 e5 3 dxe5 d4 4 Nf3 Nc6 5 g3'	'Queen''s Gambit Declined, Albin Counter Gambit, 5.g3')
-		#('1 d4 d5 2 c4 c6'	'Queen''s Gambit Declined Slav')
-		#('1 d4 d5 2 c4 c6 3 Nf3'	'Queen''s Gambit Declined Slav 2')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 e3 Bf5'	'Queen''s Gambit Declined Slav 3')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 cxd5 cxd5'	'Queen''s Gambit Declined Slav, Exchange Variation')
+	^ #(
+		#('1 d4 d5'													'Queen''s Pawn Game')
+		#('1 d4 d5 2 Nc3 Nf6 3 Bg5'								'Richter-Veresov Attack')
+		#('1 d4 d5 2 Nf3'											'Queen''s Pawn Game 2')
+		#('1 d4 d5 2 Nf3 Nf6 3 Bg5'								'Torre Attack (Tartakower Variation)')
+		#('1 d4 d5 2 Nf3 Nf6 3 e3'									'Queen''s Pawn Game 3')
+		#('1 d4 d5 2 Nf3 Nf6 3 e3 e6'								'Queen''s Pawn Game 4')
+		#('1 d4 d5 2 c4'												'Queen''s Gambit Declined')
+		#('1 d4 d5 2 c4 Nc6'										'Queen''s Gambit Declined, Chigorin Defense')
+		#('1 d4 d5 2 c4 e5'											'Queen''s Gambit Declined, Albin Counter Gambit')
+		#('1 d4 d5 2 c4 e5 3 dxe5 d4 4 Nf3 Nc6 5 g3'			'Queen''s Gambit Declined, Albin Counter Gambit, 5.g3')
+		#('1 d4 d5 2 c4 c6'											'Queen''s Gambit Declined Slav')
+		#('1 d4 d5 2 c4 c6 3 Nf3'									'Queen''s Gambit Declined Slav 2')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 e3 Bf5'					'Queen''s Gambit Declined Slav 3')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 cxd5 cxd5'				'Queen''s Gambit Declined Slav, Exchange Variation')
 		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 cxd5 cxd5 5 Nc3 Nc6 6 Bf4 Bf5'	'Queen''s Gambit Declined Slav, Exchange Variation 2')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3'	'Queen''s Gambit Declined Slav 4')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3 dxc4 5 a4'	'Queen''s Gambit Declined Slav 5')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3'						'Queen''s Gambit Declined Slav 4')
+		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3 dxc4 5 a4'			'Queen''s Gambit Declined Slav 5')
 		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3 dxc4 5 a4 Bf5'		'Queen''s Gambit Declined Slav 6')
 		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3 dxc4 5 a4 Bf5 6 e3 e6 7 Bxc4 Bb4 8 O-O O-O 9 Qe2'		'Queen''s Gambit Declined Slav, Dutch 2')
-		#('1 d4 d5 2 c4 dxc4'		'Queen''s Gambit Accepted')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3'		'Queen''s Gambit Accepted 2')
+		#('1 d4 d5 2 c4 dxc4'										'Queen''s Gambit Accepted')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3'								'Queen''s Gambit Accepted 2')
 		#('1 d4 d5 2 c4 dxc4 3 Nf3 a6 4 e3 Bg4 5 Bxc4 e6 6 d5'		'Queen''s Gambit Accepted 3')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6'		'Queen''s Gambit Accepted 3')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 Nc3'		'Queen''s Gambit Accepted 4')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3'		'Queen''s Gambit Accepted 5')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6'		'Queen''s Gambit Accepted 6')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6'							'Queen''s Gambit Accepted 3')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 Nc3'					'Queen''s Gambit Accepted 4')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3'						'Queen''s Gambit Accepted 5')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6'					'Queen''s Gambit Accepted 6')
 		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6'		'Queen''s Gambit Accepted, Classical')
 		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6 7 Qe2'		'Queen''s Gambit Accepted, Classical 2')
 		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6 7 Qe2 b5 8 Bb3 Bb7'		'Queen''s Gambit Accepted, Classical 3')
-		#('1 d4 d5 2 c4 e6'		'Queen''s Gambit Declined 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3'		'Queen''s Gambit Declined 3')
-		#('1 d4 d5 2 c4 e6 3 Nc3 c5'		'Queen''s Gambit Declined, Tarrasch')
+		#('1 d4 d5 2 c4 e6'											'Queen''s Gambit Declined 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3'									'Queen''s Gambit Declined 3')
+		#('1 d4 d5 2 c4 e6 3 Nc3 c5'								'Queen''s Gambit Declined, Tarrasch')
 		#('1 d4 d5 2 c4 e6 3 Nc3 c5 4 cxd5 exd5 5 Nf3 Nc6 6 g3'		'Queen''s Gambit Declined, Tarrasch 2')
 		#('1 d4 d5 2 c4 e6 3 Nc3 c5 4 cxd5 exd5 5 Nf3 Nc6 6 g3 Nf6 7 Bg2 Be7'		'Queen''s Gambit Declined, Tarrasch 3')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6'		'Queen''s Gambit Declined 4')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6'								'Queen''s Gambit Declined 4')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 cxd5 exd5 5 Bg5 c6 6 Qc2'		'Queen''s Gambit Declined, Exchange, Positional line, 6.Qc2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3'		'Queen''s Gambit Declined 5')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 Bb4'		'Queen''s Gambit Declined, Ragozin Variation')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 Bb4 5 Bg5 dxc4'		'Queen''s Gambit Declined, Ragozin, Vienna Variation')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5'		'Queen''s Gambit Declined, Semi-Tarrasch')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5 5 cxd5'		'Queen''s Gambit Declined, Semi-Tarrasch 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3'						'Queen''s Gambit Declined 5')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 Bb4'					'Queen''s Gambit Declined, Ragozin Variation')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 Bb4 5 Bg5 dxc4'	'Queen''s Gambit Declined, Ragozin, Vienna Variation')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5'					'Queen''s Gambit Declined, Semi-Tarrasch')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5 5 cxd5'			'Queen''s Gambit Declined, Semi-Tarrasch 2')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5 5 cxd5 Nxd5 6 e3 Nc6 7 Bd3'		'Queen''s Gambit Declined, Semi-Tarrasch, 7.Bd3')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6'		'Queen''s Gambit Declined, Semi-Slav')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 Bg5 dxc4'		'Queen''s Gambit Declined, Semi-Slav 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3'		'Queen''s Gambit Declined, Semi-Slav 3')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6'					'Queen''s Gambit Declined, Semi-Slav')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 Bg5 dxc4'	'Queen''s Gambit Declined, Semi-Slav 2')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3'			'Queen''s Gambit Declined, Semi-Slav 3')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3'		'Queen''s Gambit Declined, Semi-Slav 4')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3 dxc4 7 Bxc4'		'Queen''s Gambit Declined, Semi-Slav 5')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3 dxc4 7 Bxc4 b5 8 Bd3 a6'		'Queen''s Gambit Declined, Meran')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3 dxc4 7 Bxc4 b5 8 Bd3 a6 9 e4 c5 10 e5 cxd4 11 Nxb5'		'Queen''s Gambit Declined, Meran 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5'		'Queen''s Gambit Declined 6')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Nbd7'		'Queen''s Gambit Declined 7')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5'						'Queen''s Gambit Declined 6')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Nbd7'				'Queen''s Gambit Declined 7')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Nbd7 5 e3 c6 6 Nf3'		'Queen''s Gambit Declined 8')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7'		'Queen''s Gambit Declined 9')
+		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7'				'Queen''s Gambit Declined 9')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Rc1'		'Queen''s Gambit Declined, Anti-Neo-Orthodox Variation')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3'		'Queen''s Gambit Declined 10')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 h6 7 Bh4'		'Queen''s Gambit Declined 11')
@@ -475,67 +500,59 @@ queensGambit
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3'		'Queen''s Gambit Declined, Orthodox Defense, Bd3 line')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4 9 Bxc4 Nd5'		'Queen''s Gambit Declined, Orthodox Defense, Bd3 line 2')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4'		'Queen''s Gambit Declined, Orthodox Defense, Classical')
-	).
-	col do: [:ea |
-		tree add: ea first.
-		tree at: ea first put: ea second]! !
+	)! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 13:17:40'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:16:22'!
 ruyLopez
-	"Add Ruy Lopez openings to tree"
-	| col |
+	"Answer the Ruy Lopez openings"
 	
-	col _ #(
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5'													'Ruy Lopez')
+	^ #(
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5'														'Ruy Lopez')
 		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 d6'													'Ruy Lopez, Old Steinitz Defense')
 		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 f5'													'Ruy Lopez, Schliemann Defense')
 		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Bc5'													'Ruy Lopez, Classical')
 		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Nf6'													'Ruy Lopez, Berlin Defense')
 		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Nf6 4 O-O d6'										'Ruy Lopez 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Nf6 4 O-O Nxe4'										'Ruy Lopez 3')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Bxc6'										'Ruy Lopez, Exchange')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Bxc6 dc 5 O-O f6'										'Ruy Lopez, Exchange, Gligoric Variation')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4'										'Ruy Lopez 4')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Nf6 4 O-O Nxe4'									'Ruy Lopez 3')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Bxc6'											'Ruy Lopez, Exchange')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Bxc6 dc 5 O-O f6'							'Ruy Lopez, Exchange, Gligoric Variation')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4'											'Ruy Lopez 4')
 		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6'										'Ruy Lopez 5')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 O-O'										'Ruy Lopez, Modern Steinitz Defense, 5.O-O')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 Bxc6+ bxc6 6 d4'										'Ruy Lopez, Modern Steinitz Defense')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3'										'Ruy Lopez, Modern Steinitz Defense 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3 Bd7'										'Ruy Lopez, Modern Steinitz Defense 3')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3 Bd7 6 d4 g6'										'Ruy Lopez, Modern Steinitz Defense, Fianchetto Variation')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 O-O'									'Ruy Lopez, Modern Steinitz Defense, 5.O-O')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 Bxc6+ bxc6 6 d4'					'Ruy Lopez, Modern Steinitz Defense')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3'									'Ruy Lopez, Modern Steinitz Defense 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3 Bd7'								'Ruy Lopez, Modern Steinitz Defense 3')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3 Bd7 6 d4 g6'					'Ruy Lopez, Modern Steinitz Defense, Fianchetto Variation')
 		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6'										'Ruy Lopez 6')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O'										'Ruy Lopez 7')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O d6'										'Ruy Lopez, Steinitz Defense Deferred')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4'										'Ruy Lopez, Open')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6 9 Qe2'										'Ruy Lopez, Open, Howell Attack')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6 9 c3'										'Ruy Lopez, Open')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6'									'Ruy Lopez, Open 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7'									'Ruy Lopez, Closed')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Bxc6 dxc6'									'Ruy Lopez, Exchange Variation Doubly Deferred (DERLD)')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Qe2'									'Ruy Lopez, Worrall Attack')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 d6'									'Ruy Lopez 8')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3'									'Ruy Lopez 9')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d5'									'Ruy Lopez, Marshall')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6'									'Ruy Lopez, Closed')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 d4'							'Ruy Lopez, Closed 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3'							'Ruy Lopez, Closed 3')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 h6'							'Ruy Lopez, Smyslov Defense')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Nb8'							'Ruy Lopez, Breyer Defense')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Nb8 10 d4'							'Ruy Lopez, Closed, Breyer')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2'							'Ruy Lopez, Closed 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7'			'Ruy Lopez, Closed, Chigorin')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7 12 Nbd2 Nc6'			'Ruy Lopez, Closed, Chigorin 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7 12 Nbd2 cxd4 13 cxd4'			'Ruy Lopez, Closed, Chigorin, 12...cd')
-	).
-	col do: [:ea |
-		tree add: ea first.
-		tree at: ea first put: ea second]! !
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O'								'Ruy Lopez 7')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O d6'							'Ruy Lopez, Steinitz Defense Deferred')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4'							'Ruy Lopez, Open')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6 9 Qe2'		'Ruy Lopez, Open, Howell Attack')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6 9 c3'		'Ruy Lopez, Open')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6'				'Ruy Lopez, Open 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7'							'Ruy Lopez, Closed')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Bxc6 dxc6'			'Ruy Lopez, Exchange Variation Doubly Deferred (DERLD)')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Qe2'					'Ruy Lopez, Worrall Attack')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 d6'				'Ruy Lopez 8')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3'		'Ruy Lopez 9')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d5'	'Ruy Lopez, Marshall')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6'	'Ruy Lopez, Closed')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 d4'	'Ruy Lopez, Closed 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3'	'Ruy Lopez, Closed 3')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 h6'	'Ruy Lopez, Smyslov Defense')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Nb8'		'Ruy Lopez, Breyer Defense')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Nb8 10 d4'		'Ruy Lopez, Closed, Breyer')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2'	'Ruy Lopez, Closed 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7'	'Ruy Lopez, Closed, Chigorin')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7 12 Nbd2 Nc6'	'Ruy Lopez, Closed, Chigorin 2')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7 12 Nbd2 cxd4 13 cxd4'		'Ruy Lopez, Closed, Chigorin, 12...cd')
+	)! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 22:06:14'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:11:05'!
 sicilian
-	"Add Sicilian openings to tree"
-	| col |
+	"Answer the Sicilian openings"
 	
-	col _ #(
+	^ #(
 		#('1 e4 c5'																'Sicilian')
 		#('1 e4 c5 2 f4'															'Sicilian, 2.f4')
 		#('1 e4 c5 2 d4'															'Sicilian, 2.d4')
@@ -616,10 +633,28 @@ sicilian
 		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Qb6'		'Sicilian, Najdorf 4')
 		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Be7'		'Sicilian, Najdorf 5')
 		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Be7 8 Qf3 Qc7 9 O-O-O Nbd7'		'Sicilian, Najdorf, 7...Be7 Main line')
-	).
-	col do: [:ea |
+	)! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 12:43:21'!
+treeAdd: aCollection
+	"Add openings in aCollection to tree"
+
+	aCollection do: [:ea |
+		simple add: ea first.
 		tree add: ea first.
 		tree at: ea first put: ea second]! !
+
+!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 17:30:14'!
+lookup
+	"Answer the value of lookup"
+
+	^ lookup! !
+
+!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 17:30:46'!
+selectedOpening
+	"Answer the value of selectedOpening"
+
+	^ selectedOpening! !
 
 !OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 13:28:17'!
 tree
@@ -632,6 +667,50 @@ tree: anObject
 	"Set the value of tree"
 
 	tree _ anObject! !
+
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 12:44:26'!
+openings
+	"Answer the names of chess openings"
+	| col |
+	
+	col _ OrderedCollection new.
+	(query isNil or: [query isEmpty])
+		ifTrue: [tree valuesDo: [:ea | ea size > 4 ifTrue: [col add: ea]]]
+		ifFalse: [
+			"tree forPrefix: query keysAndValuesDo: [:key :val | col add: val]."
+			openingsIndex _ 0.
+			self triggerEvent: #search].
+	^ col! !
+
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/13/2018 11:16:03'!
+openingsFor: aString
+	"Search for openings which begin with aString"
+	
+	query _ aString.
+	self openings! !
+
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/12/2018 15:56:01'!
+openingsIndex
+	"Answer the value of the index"
+
+	^ openingsIndex ifNil: [openingsIndex _ 0]. 	"nil is unacceptable during model initialization"
+! !
+
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/12/2018 17:36:26'!
+openingsIndex: anObject
+	"Set the value of openingsIndex"
+
+	openingsIndex _ anObject.
+	anObject > 0
+		ifTrue: [self selectedOpening: (self openings at: anObject)].
+	self triggerEvent: #openingChange! !
+
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/12/2018 16:07:28'!
+selectedOpening: anObject
+	"Set the value of selectedOpening"
+
+	selectedOpening _ anObject.
+	self changed: #openingIndex 	"enables deselection of the list by using the mouse"! !
 
 !ChessStream methodsFor: 'filtering' stamp: 'dhn 7/31/2018 16:45:13'!
 unBrace
@@ -653,6 +732,113 @@ unParens
 	
 	[self peek = $( ] whileTrue: [
 		[self atEnd == false and: [self next ~= $) ]] whileTrue]! !
+
+!OpeningView methodsFor: 'initialization' stamp: 'dhn 9/13/2018 20:28:10'!
+buildMorphicWindow
+	"Specify the layout of the view"
+	| upper lower |
+	
+	self layoutMorph beColumn 
+		name: #main. 	"give the layoutMorph a name which will appear in the halos"
+
+	upper _ LayoutMorph newRow name: #upper.
+	
+	upper addMorph: 
+		((PluggableButtonMorph model: self action: #search)
+			label: 'Search';
+			layoutSpec: (LayoutSpec proportionalWidth: 0.3)).
+	upper addMorph: ((searchString _ TextModelMorph 
+		withModel: (TextModel withText: ''))
+			layoutSpec: LayoutSpec useAll;
+			askBeforeDiscardingEdits: false;	"discard changes to the text"
+			name: #search).
+			
+	lower _ LayoutMorph newRow name: #lower.
+	
+	self layoutMorph
+		addMorph: upper layoutSpec: (LayoutSpec proportionalHeight: 0.15);
+		addMorph: lower layoutSpec: (LayoutSpec proportionalHeight: 0.85).
+			
+	listPane _ (PluggableListMorph
+				model: model 	"the object specified in self class open"
+				listGetter: #openings 	"the method in 'model' which answers the list content"
+				indexGetter: #openingsIndex 	"the method in 'model' which answers the selection made in the list"
+				indexSetter: #openingsIndex:	"the method in 'model' which sets the list index"
+				mainView: nil
+				menuGetter: nil
+				keystrokeAction: nil)
+					name: #openings. 	"give the PluggableListMorph a name which will appear in the halos"
+
+	textPane _ (TextModelMorph 
+		withModel: (TextModel withText: '')) 	"note the different model specification"
+			askBeforeDiscardingEdits: false;	"discard changes to the text"
+			name: #moves. 	"give the TextModelMorph a name which will appear in the halos"
+
+	lower
+		addMorph: listPane layoutSpec: (LayoutSpec proportionalWidth: 0.5);
+		addAdjusterAndMorph: textPane layoutSpec: (LayoutSpec proportionalWidth: 0.5)
+! !
+
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/13/2018 20:28:34'!
+changeList
+	"React to a changed list"
+
+	listPane updateList! !
+
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/12/2018 17:31:13'!
+newText
+	"Set the contents of the text pane"
+	"note that the textPane model differs from the model for this view"
+
+	textPane model actualContents: (
+		model openingsIndex > 0
+			ifTrue: [model lookup at: model selectedOpening] 	
+			ifFalse: [''])! !
+
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/12/2018 20:04:35'!
+search
+
+	model openingsFor: searchString text asString! !
+
+!OpeningView class methodsFor: 'instance creation' stamp: 'dhn 9/13/2018 20:15:54'!
+open
+"	Answer an instance of this class.
+	To start from a Browser or a WorkSpace, do (cmd-d) the following:
+
+	OpeningView open.
+"
+	| mod win |
+
+	win _ (self
+		open: (mod _ OpeningModel new) "an instance of the model"
+		label: 'Chess Openings') 	"the initial title; can be changed later with #setLabel: "
+			setWindowColor:  Theme current transcript. 	"the initial color of the window title bar and frame; other choices below"	
+	"#open:label: sends #buildMorphicWindow to the instance of this class, to allow customization of the view"
+
+	mod when: #openingChange send: #newText to: win.
+	mod when: #search send: #changeList to: win.
+	
+	win morphExtent: 400@200.
+	^ win
+	
+	"the following answer specific colors which match Cuis themes: 
+									Theme current browser 
+									Theme current changeList 
+									Theme current changeSorter 
+									Theme current fileContentsBrowser 
+									Theme current packageList 
+									Theme current debugger 
+									Theme current fileList 
+									Theme current messageNames 
+									Theme current messageSet 
+									Theme current object 
+									Theme current testRunner 
+									Theme current textEditor 
+									Theme current transcript 
+									Theme current versionsBrowser 
+									Theme current workspace 
+	or, use a Color class method"
+! !
 
 !Count methodsFor: 'display' stamp: 'dhn 7/23/2018 15:44:23'!
 printString
