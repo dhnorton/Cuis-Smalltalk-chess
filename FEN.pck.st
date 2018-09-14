@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 12:45:25 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 3:24:59 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 66!
+!provides: 'FEN' 1 67!
 SystemOrganization addCategory: #FEN!
 
 
@@ -16,7 +16,7 @@ Board class
 
 !classDefinition: #OpeningModel category: #FEN!
 ActiveModel subclass: #OpeningModel
-	instanceVariableNames: 'tree openingsIndex selectedOpening lookup query simple'
+	instanceVariableNames: 'tree listCollection openingsIndex selectedOpening lookup query simple searching'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'FEN'!
@@ -383,10 +383,12 @@ firstMoves
 	col do: [:ea | tree add: ea first]	
 ! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 12:42:42'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 14:09:02'!
 initialize
 	"Establish the Chess Openings database"
 	
+	searching _ false.
+	listCollection _ OrderedCollection new.
 	simple _ OrderedCollection new.
 	tree _ Trie new.
 	self 
@@ -635,12 +637,13 @@ sicilian
 		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Be7 8 Qf3 Qc7 9 O-O-O Nbd7'		'Sicilian, Najdorf, 7...Be7 Main line')
 	)! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 12:43:21'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 15:22:37'!
 treeAdd: aCollection
 	"Add openings in aCollection to tree"
 
 	aCollection do: [:ea |
 		simple add: ea first.
+		listCollection add: ea second.
 		tree add: ea first.
 		tree at: ea first put: ea second]! !
 
@@ -668,26 +671,26 @@ tree: anObject
 
 	tree _ anObject! !
 
-!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 12:44:26'!
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 14:54:30'!
 openings
 	"Answer the names of chess openings"
-	| col |
-	
-	col _ OrderedCollection new.
-	(query isNil or: [query isEmpty])
-		ifTrue: [tree valuesDo: [:ea | ea size > 4 ifTrue: [col add: ea]]]
-		ifFalse: [
-			"tree forPrefix: query keysAndValuesDo: [:key :val | col add: val]."
-			openingsIndex _ 0.
-			self triggerEvent: #search].
-	^ col! !
 
-!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/13/2018 11:16:03'!
+	^ listCollection! !
+
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 14:14:39'!
 openingsFor: aString
 	"Search for openings which begin with aString"
 	
+	searching _ true.
+	listCollection _ OrderedCollection new.
 	query _ aString.
-	self openings! !
+		simple do: [:ea | | ky |
+			ea size >= query size
+				ifTrue: [
+					ky _ ea copyFrom: 1 to: query size.
+					ky = query
+						ifTrue: [listCollection add: ea]]].
+	self openingsIndex: 0! !
 
 !OpeningModel methodsFor: 'operating' stamp: 'dhn 9/12/2018 15:56:01'!
 openingsIndex
@@ -704,6 +707,14 @@ openingsIndex: anObject
 	anObject > 0
 		ifTrue: [self selectedOpening: (self openings at: anObject)].
 	self triggerEvent: #openingChange! !
+
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 14:53:28'!
+reset
+	"Rest the receiver to its original state"
+	
+	listCollection _ OrderedCollection new.
+	simple do: [:ea | listCollection add: (lookup at: ea)].
+	self openingsIndex: 0! !
 
 !OpeningModel methodsFor: 'operating' stamp: 'dhn 9/12/2018 16:07:28'!
 selectedOpening: anObject
@@ -733,7 +744,7 @@ unParens
 	[self peek = $( ] whileTrue: [
 		[self atEnd == false and: [self next ~= $) ]] whileTrue]! !
 
-!OpeningView methodsFor: 'initialization' stamp: 'dhn 9/13/2018 20:28:10'!
+!OpeningView methodsFor: 'initialization' stamp: 'dhn 9/14/2018 14:27:51'!
 buildMorphicWindow
 	"Specify the layout of the view"
 	| upper lower |
@@ -746,6 +757,10 @@ buildMorphicWindow
 	upper addMorph: 
 		((PluggableButtonMorph model: self action: #search)
 			label: 'Search';
+			layoutSpec: (LayoutSpec proportionalWidth: 0.3)).
+	upper addMorph: 
+		((PluggableButtonMorph model: self action: #reset)
+			label: 'Reset';
 			layoutSpec: (LayoutSpec proportionalWidth: 0.3)).
 	upper addMorph: ((searchString _ TextModelMorph 
 		withModel: (TextModel withText: ''))
@@ -794,6 +809,13 @@ newText
 		model openingsIndex > 0
 			ifTrue: [model lookup at: model selectedOpening] 	
 			ifFalse: [''])! !
+
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/14/2018 15:24:23'!
+reset
+	"Restore the view to the initial state"
+
+	searchString _ ''.
+	model reset! !
 
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/12/2018 20:04:35'!
 search
