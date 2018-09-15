@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 9:15:53 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 1:04:35 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 72!
+!provides: 'FEN' 1 73!
 SystemOrganization addCategory: #FEN!
 
 
@@ -745,14 +745,17 @@ changeList
 
 	listPane updateList! !
 
-!OpeningView methodsFor: 'updating' stamp: 'dhn 9/14/2018 19:59:03'!
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/15/2018 12:58:12'!
 newText
 	"Set the contents of the text pane"
 	"note that the textPane model differs from the model for this view"
+	| nam |
 
 	textPane model actualContents: (
 		model openingsIndex > 0
-			ifTrue: [(model simple at: model selectedOpening) first]
+			ifTrue: [
+				nam _ listPane model listCollection at: model selectedOpening.
+				(model simple detect: [:a | a second = nam]) first]
 			ifFalse: [''])! !
 
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/14/2018 20:49:00'!
