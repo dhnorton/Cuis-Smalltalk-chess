@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 2:18:57 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 3:08:18 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 74!
+!provides: 'FEN' 1 75!
 SystemOrganization addCategory: #FEN!
 
 
@@ -688,7 +688,7 @@ unParens
 	[self peek = $( ] whileTrue: [
 		[self atEnd == false and: [self next ~= $) ]] whileTrue]! !
 
-!OpeningView methodsFor: 'initialization' stamp: 'dhn 9/14/2018 21:13:45'!
+!OpeningView methodsFor: 'initialization' stamp: 'dhn 9/15/2018 15:00:27'!
 buildMorphicWindow
 	"Specify the layout of the view"
 	| upper lower |
@@ -723,8 +723,8 @@ buildMorphicWindow
 				listGetter: #openings 	"the method in 'model' which answers the list content"
 				indexGetter: #openingsIndex 	"the method in 'model' which answers the selection made in the list"
 				indexSetter: #openingsIndex:	"the method in 'model' which sets the list index"
-				mainView: nil
-				menuGetter: nil
+				mainView: self
+				menuGetter: #listMenu
 				keystrokeAction: nil)
 					name: #openings. 	"give the PluggableListMorph a name which will appear in the halos"
 
@@ -743,6 +743,19 @@ changeList
 	"React to a changed list"
 
 	listPane updateList! !
+
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/15/2018 15:06:37'!
+listMenu
+	"Show the popup menu"	
+	| aMenu |
+	
+	aMenu _ MenuMorph new defaultTarget: self.
+	model openingsIndex > 0
+		ifTrue: [
+			aMenu
+				add: 'Write a *.pgn file'		action: #writePgn
+				].
+	^ aMenu! !
 
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/15/2018 12:58:12'!
 newText
