@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 1:04:35 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 2:18:57 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 73!
+!provides: 'FEN' 1 74!
 SystemOrganization addCategory: #FEN!
 
 
@@ -642,15 +642,14 @@ openingsIndex
 	^ openingsIndex ifNil: [openingsIndex _ 0]. 	"nil is unacceptable during model initialization"
 ! !
 
-!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 18:10:23'!
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/15/2018 14:18:01'!
 openingsIndex: anObject
 	"Set the value of openingsIndex"
 
 	openingsIndex _ anObject.
 	anObject > 0
-		ifTrue: [
-			self selectedOpening: anObject.
-			self triggerEvent: #openingChange]! !
+		ifTrue: [self selectedOpening: anObject].
+	self triggerEvent: #openingChange! !
 
 !OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 20:19:56'!
 reset
