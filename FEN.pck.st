@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 3:08:18 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 5:38:27 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 75!
+!provides: 'FEN' 1 76!
 SystemOrganization addCategory: #FEN!
 
 
@@ -736,6 +736,28 @@ buildMorphicWindow
 	lower
 		addMorph: listPane layoutSpec: (LayoutSpec proportionalWidth: 0.6);
 		addAdjusterAndMorph: textPane layoutSpec: (LayoutSpec proportionalWidth: 0.4)
+! !
+
+!OpeningView methodsFor: 'fileout' stamp: 'dhn 9/15/2018 17:36:51'!
+writePgn
+	"Write a *.pgn file"
+	| arg outFile lines |
+	
+	arg _ (FillInTheBlankMorph 
+		request: 'Base name for *.pgn file?'
+		initialAnswer: 'chess/'
+		centerAt: Display center
+		onCancelReturn: ''
+		acceptOnCR: true).
+	arg 
+		ifNotEmpty: [
+			outFile _ arg, '.pgn'.
+			lines _ String new writeStream
+					nextPut: $[;
+					nextPutAll: (model listCollection at: model openingsIndex);
+					nextPut: $]; newLine; newLine;
+					nextPutAll: textPane model actualContents; newLine.
+			outFile asFileEntry forceWriteStreamDo: [ :out | out nextPutAll: lines contents]]
 ! !
 
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/13/2018 20:28:34'!
