@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 7:43:09 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 8:21:11 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 69!
+!provides: 'FEN' 1 70!
 SystemOrganization addCategory: #FEN!
 
 
@@ -16,7 +16,7 @@ Board class
 
 !classDefinition: #OpeningModel category: #FEN!
 ActiveModel subclass: #OpeningModel
-	instanceVariableNames: 'tree listCollection openingsIndex selectedOpening lookup query simple searching'
+	instanceVariableNames: 'listCollection openingsIndex selectedOpening query simple'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'FEN'!
@@ -357,55 +357,19 @@ pieceTemplate
 		yourself
 ! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/11/2018 20:18:30'!
-firstMoves
-	"Add all first moves possible by white to tree"
-	| col |
-	
-	col _ #(
-		#('1 a3')
-		#('1 a4')
-		#('1 b3')
-		#('1 b4')
-		#('1 c3')
-		#('1 c4')
-		#('1 d3')
-		#('1 d4')
-		#('1 e3')
-		#('1 e4')
-		#('1 f3')
-		#('1 f4')
-		#('1 g3')
-		#('1 g4')
-		#('1 h3')
-		#('1 h4')
-	).
-	col do: [:ea | tree add: ea first]	
-! !
-
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 18:11:58'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 20:07:59'!
 initialize
 	"Establish the Chess Openings database"
 	
-	searching _ false.
-	listCollection _ OrderedCollection new.
 	simple _ OrderedCollection new.
-	tree _ Trie new.
-	self halt.
-	self 
-		firstMoves;
-		treeAdd: self kingsGambit;
-		treeAdd: self queensGambit;
-		treeAdd: self sicilian;
-		treeAdd: self ruyLopez.
-		
-	lookup _ Dictionary new.	
-	self
-		lookupAdd: self kingsGambit;
-		lookupAdd: self queensGambit;
-		lookupAdd: self sicilian;
-		lookupAdd: self ruyLopez.
-! !
+	simple 
+		addAll: self kingsGambit;
+		addAll: self queensGambit;
+		addAll: self sicilian;
+		addAll: self ruyLopez.
+
+	listCollection _ OrderedCollection new.
+	simple do: [:ea | listCollection add: ea second]! !
 
 !OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:00:52'!
 kingsGambit
@@ -423,12 +387,6 @@ kingsGambit
 		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Bc4 Bg7'	'King''s Gambit Accepted 4')
 		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 h4'			'King''s Gambit Accepted 5')
 	)! !
-
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:21:50'!
-lookupAdd: aCollection
-	"Add openings in aCollection to lookup"
-
-	aCollection do: [:ea | 	lookup at: ea second put: ea first]! !
 
 !OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:08:29'!
 queensGambit
@@ -638,27 +596,11 @@ sicilian
 		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Be7 8 Qf3 Qc7 9 O-O-O Nbd7'		'Sicilian, Najdorf, 7...Be7 Main line')
 	)! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 15:22:37'!
-treeAdd: aCollection
-	"Add openings in aCollection to tree"
-
-	aCollection do: [:ea |
-		simple add: ea first.
-		listCollection add: ea second.
-		tree add: ea first.
-		tree at: ea first put: ea second]! !
-
 !OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/14/2018 18:24:29'!
 listCollection
 	"Answer the value of listCollection"
 
 	^ listCollection! !
-
-!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 17:30:14'!
-lookup
-	"Answer the value of lookup"
-
-	^ lookup! !
 
 !OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 17:30:46'!
 selectedOpening
@@ -666,17 +608,11 @@ selectedOpening
 
 	^ selectedOpening! !
 
-!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 13:28:17'!
-tree
-	"Answer the value of tree"
+!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/14/2018 20:00:46'!
+simple
+	"Answer the value of simple"
 
-	^ tree! !
-
-!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 13:28:17'!
-tree: anObject
-	"Set the value of tree"
-
-	tree _ anObject! !
+	^ simple! !
 
 !OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 14:54:30'!
 openings
@@ -684,20 +620,20 @@ openings
 
 	^ listCollection! !
 
-!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 15:36:31'!
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 20:18:31'!
 openingsFor: aString
 	"Search for openings which begin with aString"
 	
-	searching _ true.
 	listCollection _ OrderedCollection new.
 	query _ aString.
 		simple do: [:ea | | ky |
-			ea size >= query size
+			ea first size >= query size
 				ifTrue: [
-					ky _ ea copyFrom: 1 to: query size.
+					ky _ ea first copyFrom: 1 to: query size.
 					ky = query
-						ifTrue: [listCollection add: (lookup keyAtValue: ea)]]].
-	self openingsIndex: 0! !
+						ifTrue: [listCollection add: ea second]]].
+	self openingsIndex: 0.
+	self triggerEvent: #search! !
 
 !OpeningModel methodsFor: 'operating' stamp: 'dhn 9/12/2018 15:56:01'!
 openingsIndex
@@ -716,13 +652,14 @@ openingsIndex: anObject
 			self selectedOpening: anObject.
 			self triggerEvent: #openingChange]! !
 
-!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 15:42:01'!
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 20:19:56'!
 reset
 	"Rest the receiver to its original state"
 	
 	listCollection _ OrderedCollection new.
-	simple do: [:ea | listCollection add: (lookup keyAtValue: ea)].
-	self openingsIndex: 0! !
+	simple do: [:ea | listCollection add: ea second].
+	self openingsIndex: 0.
+	self triggerEvent: #search! !
 
 !OpeningModel methodsFor: 'operating' stamp: 'dhn 9/12/2018 16:07:28'!
 selectedOpening: anObject
@@ -808,14 +745,14 @@ changeList
 
 	listPane updateList! !
 
-!OpeningView methodsFor: 'updating' stamp: 'dhn 9/14/2018 18:25:54'!
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/14/2018 19:59:03'!
 newText
 	"Set the contents of the text pane"
 	"note that the textPane model differs from the model for this view"
 
 	textPane model actualContents: (
 		model openingsIndex > 0
-			ifTrue: [model lookup at: (model listCollection at: model selectedOpening)]
+			ifTrue: [(model simple at: model selectedOpening) first]
 			ifFalse: [''])! !
 
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/14/2018 15:24:23'!
