@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 8:21:11 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 8:51:05 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 70!
+!provides: 'FEN' 1 71!
 SystemOrganization addCategory: #FEN!
 
 
@@ -755,11 +755,12 @@ newText
 			ifTrue: [(model simple at: model selectedOpening) first]
 			ifFalse: [''])! !
 
-!OpeningView methodsFor: 'updating' stamp: 'dhn 9/14/2018 15:24:23'!
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/14/2018 20:49:00'!
 reset
 	"Restore the view to the initial state"
 
-	searchString _ ''.
+	searchString model actualContents: ''.
+	textPane model actualContents: ''.
 	model reset! !
 
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/12/2018 20:04:35'!
