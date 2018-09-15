@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 8:51:05 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 14 September 2018 at 9:15:53 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 71!
+!provides: 'FEN' 1 72!
 SystemOrganization addCategory: #FEN!
 
 
@@ -689,7 +689,7 @@ unParens
 	[self peek = $( ] whileTrue: [
 		[self atEnd == false and: [self next ~= $) ]] whileTrue]! !
 
-!OpeningView methodsFor: 'initialization' stamp: 'dhn 9/14/2018 14:27:51'!
+!OpeningView methodsFor: 'initialization' stamp: 'dhn 9/14/2018 21:13:45'!
 buildMorphicWindow
 	"Specify the layout of the view"
 	| upper lower |
@@ -702,11 +702,11 @@ buildMorphicWindow
 	upper addMorph: 
 		((PluggableButtonMorph model: self action: #search)
 			label: 'Search';
-			layoutSpec: (LayoutSpec proportionalWidth: 0.3)).
+			layoutSpec: (LayoutSpec fixedWidth: 80)).
 	upper addMorph: 
 		((PluggableButtonMorph model: self action: #reset)
 			label: 'Reset';
-			layoutSpec: (LayoutSpec proportionalWidth: 0.3)).
+			layoutSpec: (LayoutSpec fixedWidth: 80)).
 	upper addMorph: ((searchString _ TextModelMorph 
 		withModel: (TextModel withText: ''))
 			layoutSpec: LayoutSpec useAll;
@@ -716,8 +716,8 @@ buildMorphicWindow
 	lower _ LayoutMorph newRow name: #lower.
 	
 	self layoutMorph
-		addMorph: upper layoutSpec: (LayoutSpec proportionalHeight: 0.15);
-		addMorph: lower layoutSpec: (LayoutSpec proportionalHeight: 0.85).
+		addMorph: upper layoutSpec: (LayoutSpec fixedHeight: 30);
+		addMorph: lower layoutSpec: LayoutSpec useAll.
 			
 	listPane _ (PluggableListMorph
 				model: model 	"the object specified in self class open"
@@ -735,8 +735,8 @@ buildMorphicWindow
 			name: #moves. 	"give the TextModelMorph a name which will appear in the halos"
 
 	lower
-		addMorph: listPane layoutSpec: (LayoutSpec proportionalWidth: 0.5);
-		addAdjusterAndMorph: textPane layoutSpec: (LayoutSpec proportionalWidth: 0.5)
+		addMorph: listPane layoutSpec: (LayoutSpec proportionalWidth: 0.6);
+		addAdjusterAndMorph: textPane layoutSpec: (LayoutSpec proportionalWidth: 0.4)
 ! !
 
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/13/2018 20:28:34'!
@@ -768,7 +768,7 @@ search
 
 	model openingsFor: searchString text asString! !
 
-!OpeningView class methodsFor: 'instance creation' stamp: 'dhn 9/13/2018 20:15:54'!
+!OpeningView class methodsFor: 'instance creation' stamp: 'dhn 9/14/2018 20:56:04'!
 open
 "	Answer an instance of this class.
 	To start from a Browser or a WorkSpace, do (cmd-d) the following:
@@ -786,7 +786,7 @@ open
 	mod when: #openingChange send: #newText to: win.
 	mod when: #search send: #changeList to: win.
 	
-	win morphExtent: 400@200.
+	win morphExtent: 600@600.
 	^ win
 	
 	"the following answer specific colors which match Cuis themes: 
