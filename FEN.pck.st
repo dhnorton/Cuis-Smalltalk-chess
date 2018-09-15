@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 5:51:05 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 6:27:35 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 77!
+!provides: 'FEN' 1 78!
 SystemOrganization addCategory: #FEN!
 
 
@@ -388,7 +388,7 @@ kingsGambit
 		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 h4'			'King''s Gambit Accepted 5')
 	)! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:08:29'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 18:15:00'!
 queensGambit
 	"Answer the Queen's Gambit openings"
 	
@@ -415,10 +415,10 @@ queensGambit
 		#('1 d4 d5 2 c4 dxc4'										'Queen''s Gambit Accepted')
 		#('1 d4 d5 2 c4 dxc4 3 Nf3'								'Queen''s Gambit Accepted 2')
 		#('1 d4 d5 2 c4 dxc4 3 Nf3 a6 4 e3 Bg4 5 Bxc4 e6 6 d5'		'Queen''s Gambit Accepted 3')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6'							'Queen''s Gambit Accepted 3')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 Nc3'					'Queen''s Gambit Accepted 4')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3'						'Queen''s Gambit Accepted 5')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6'					'Queen''s Gambit Accepted 6')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6'							'Queen''s Gambit Accepted 4')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 Nc3'					'Queen''s Gambit Accepted 5')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3'						'Queen''s Gambit Accepted 6')
+		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6'					'Queen''s Gambit Accepted 7')
 		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6'		'Queen''s Gambit Accepted, Classical')
 		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6 7 Qe2'		'Queen''s Gambit Accepted, Classical 2')
 		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6 7 Qe2 b5 8 Bb3 Bb7'		'Queen''s Gambit Accepted, Classical 3')
@@ -463,12 +463,12 @@ queensGambit
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4'		'Queen''s Gambit Declined, Orthodox Defense, Classical')
 	)! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:16:22'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 18:10:06'!
 ruyLopez
 	"Answer the Ruy Lopez openings"
 	
 	^ #(
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5'														'Ruy Lopez')
+		#('1 e4 e5 2 Nf3 Nc6 3 Bb5'														'Ruy Lopez, Spanish Defense')
 		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 d6'													'Ruy Lopez, Old Steinitz Defense')
 		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 f5'													'Ruy Lopez, Schliemann Defense')
 		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Bc5'													'Ruy Lopez, Classical')
@@ -738,7 +738,7 @@ buildMorphicWindow
 		addAdjusterAndMorph: textPane layoutSpec: (LayoutSpec proportionalWidth: 0.4)
 ! !
 
-!OpeningView methodsFor: 'fileout' stamp: 'dhn 9/15/2018 17:48:46'!
+!OpeningView methodsFor: 'fileout' stamp: 'dhn 9/15/2018 18:22:29'!
 writePgn
 	"Write a *.pgn file"
 	| arg outFile lines |
@@ -753,9 +753,9 @@ writePgn
 		ifNotEmpty: [
 			outFile _ 'chess/', arg, '.pgn'.
 			lines _ String new writeStream
-					nextPut: $[;
+					nextPutAll: '[Event "';
 					nextPutAll: (model listCollection at: model openingsIndex);
-					nextPut: $]; newLine; newLine;
+					nextPutAll: '"]'; newLine; newLine;
 					nextPutAll: textPane model actualContents; newLine.
 			outFile asFileEntry forceWriteStreamDo: [ :out | out nextPutAll: lines contents]]
 ! !
