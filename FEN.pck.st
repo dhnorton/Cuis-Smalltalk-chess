@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 16 September 2018 at 11:40:22 am'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 16 September 2018 at 2:07:32 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 81!
+!provides: 'FEN' 1 83!
 SystemOrganization addCategory: #FEN!
 
 
@@ -42,6 +42,16 @@ WorkspaceWindow subclass: #OpeningView
 	category: 'FEN'!
 !classDefinition: 'OpeningView class' category: #FEN!
 OpeningView class
+	instanceVariableNames: ''!
+
+!classDefinition: #ConvertECO category: #FEN!
+Object subclass: #ConvertECO
+	instanceVariableNames: 'inName outName'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'FEN'!
+!classDefinition: 'ConvertECO class' category: #FEN!
+ConvertECO class
 	instanceVariableNames: ''!
 
 !classDefinition: #Count category: #FEN!
@@ -178,6 +188,9 @@ A stream for removing notes and rankings from Chess Portable Game Notation (PGN)
 A view for retrieving chess openings.
 
 OpeningView open.!
+
+!ConvertECO commentStamp: '<historical>' prior: 0!
+Convert lines from http://www.chessgames.com/chessecohelp.html to a collection in simple database form.!
 
 !Count commentStamp: '<historical>' prior: 0!
 A counter with increment and reset methods.!
@@ -357,40 +370,40 @@ pieceTemplate
 		yourself
 ! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 11:38:06'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 13:53:40'!
 english
 	"Answer the English openings"
 	
 	^ #(
-		#('1 c4'																	'English')
-		#('1 c4 c6'																'English, Caro-Kann Defensive System')
-		#('1 c4 c6 2 Nf3 d5 3 b3'												'English with b3')
-		#('1 c4 e6'																'English 2')
-		#('1 c4 e6 2 Nf3 d5 3 g3 Nf6 4 Bg2 Be7 5 O-O'						'English 3')
-		#('1 c4 Nf6'																'English 4')
-		#('1 c4 Nf6 2 Nc3'														'English 5')
-		#('1 c4 Nf6 2 Nc3 e6'													'English 6')
-		#('1 c4 Nf6 2 Nc3 e6 3 e4'												'English, Mikenas-Carls, Sicilian Variation')
-		#('1 c4 e5'																'English 7')
-		#('1 c4 e5 2 Nc3'														'English 8')
-		#('1 c4 e5 2 Nc3 Nf6'													'English 9')
-		#('1 c4 e5 2 Nc3 Nf6 3 g3 c6'											'English, Bremen System, Keres Variation')
-		#('1 c4 e5 2 Nc3 Nf6 3 g3 g6'											'English, Bremen System with ...g6')
-		#('1 c4 e5 2 Nc3 Nc6'													'English 10')
-		#('1 c4 e5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 d3 d6'					'English 11')
-		#('1 c4 e5 2 Nc3 Nc6 3 Nf3'											'English, Three Knights System')
-		#('1 c4 e5 2 Nc3 Nc6 3 Nf3 Nf6'										'English 12')
-		#('1 c4 e5 2 Nc3 Nc6 3 Nf3 Nf6 4 g3'									'English, Four Knights, Kingside Fianchetto')
-		#('1 c4 c5'																'English, Symmetrical')
-		#('1 c4 c5 2 Nf3 Nf6 3 d4'												'English, Symmetrical, Benoni Formation')
-		#('1 c4 c5 2 Nf3 Nf6 3 d4 cxd4 4 Nxd4 e6'							'English, Symmetrical Variation')
-		#('1 c4 c5 2 Nf3 Nf6 3 d4 cxd4 4 Nxd4 e6 5 Nc3 Nc6'				'English, Symmetrical 2')
-		#('1 c4 c5 2 Nc3'														'English, Symmetrical 3')
-		#('1 c4 c5 2 Nc3 Nc6'													'English, Symmetrical 4')
-		#('1 c4 c5 2 Nc3 Nc6 3 g3'												'English 13')
-		#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3'						'English, Symmetrical 5')
-		#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3 Nf6'				'English, Symmetrical 6')
-		#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3 Nf6 6 O-O O-O 7 d4'		'English, Symmetrical, Main line with d4')
+	#('1 c4' 'A10 English') 
+	#('1 c4 c6' 'A11 English, Caro-Kann Defensive System') 
+	#('1 c4 c6 2 Nf3 d5 3 b3' 'A12 English with b3') 
+	#('1 c4 e6' 'A13 English') 
+	#('1 c4 e6 2 Nf3 d5 3 g3 Nf6 4 Bg2 Be7 5 O-O' 'A14 English') 
+	#('1 c4 Nf6' 'A15 English') #('1 c4 Nf6 2 Nc3' 'A16 English') 
+	#('1 c4 Nf6 2 Nc3 e6' 'A17 English') 
+	#('1 c4 Nf6 2 Nc3 e6 3 e4' 'A18 English, Mikenas-Carls') 
+	#('1 c4 Nf6 2 Nc3 e6 3 e4 c5' 'A19 English, Mikenas-Carls, Sicilian Variation') 
+	#('1 c4 e5' 'A20 English') 
+	#('1 c4 e5 2 Nc3' 'A21 English') 
+	#('1 c4 e5 2 Nc3 Nf6' 'A22 English') 
+	#('1 c4 e5 2 Nc3 Nf6 3 g3 c6' 'A23 English, Bremen System, Keres Variation') 
+	#('1 c4 e5 2 Nc3 Nf6 3 g3 g6' 'A24 English, Bremen System with ...g6') 
+	#('1 c4 e5 2 Nc3 Nc6' 'A25 English') 
+	#('1 c4 e5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 d3 d6' 'A26 English') 
+	#('1 c4 e5 2 Nc3 Nc6 3 Nf3' 'A27 English, Three Knights System') 
+	#('1 c4 e5 2 Nc3 Nc6 3 Nf3 Nf6' 'A28 English') 
+	#('1 c4 e5 2 Nc3 Nc6 3 Nf3 Nf6 4 g3' 'A29 English, Four Knights, Kingside Fianchetto') 
+	#('1 c4 c5' 'A30 English, Symmetrical') 
+	#('1 c4 c5 2 Nf3 Nf6 3 d4' 'A31 English, Symmetrical, Benoni Formation') 
+	#('1 c4 c5 2 Nf3 Nf6 3 d4 cxd4 4 Nxd4 e6' 'A32 English, Symmetrical Variation') 
+	#('1 c4 c5 2 Nf3 Nf6 3 d4 cxd4 4 Nxd4 e6 5 Nc3 Nc6' 'A33 English, Symmetrical') 
+	#('1 c4 c5 2 Nc3' 'A34 English, Symmetrical') 
+	#('1 c4 c5 2 Nc3 Nc6' 'A35 English, Symmetrical') 
+	#('1 c4 c5 2 Nc3 Nc6 3 g3' 'A36 English') 
+	#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3' 'A37 English, Symmetrical') 
+	#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3 Nf6' 'A38 English, Symmetrical') 
+	#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3 Nf6 6 O-O O-O 7 d4' 'A39 English, Symmetrical, Main line with d4')
 	)! !
 
 !OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 11:38:59'!
@@ -411,22 +424,22 @@ initialize
 	listCollection _ OrderedCollection new.
 	simple do: [:ea | listCollection add: ea second]! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:00:52'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 14:06:01'!
 kingsGambit
 	"Answer the King's Gambit openings"
 	
 	^ #(
-		#('1 e4 e5 2 f4'									'King''s Gambit Declined')
-		#('1 e4 e5 2 f4 d5'								'King''s Gambit Declined, Falkbeer Counter Gambit')
-		#('1 e4 e5 2 f4 d5 3 exd5 e4 4 d3 Nf6'		'King''s Gambit Declined, Falkbeer Counter 2')
-		#('1 e4 e5 2 f4 exf4'							'King''s Gambit Accepted')
-		#('1 e4 e5 2 f4 exf4 3 Nf3'					'King''s Gambit Accepted 2')
-		#('1 e4 e5 2 f4 exf4 3 Nf3 Be7'				'King''s Gambit Accepted, Cunningham')
-		#('1 e4 e5 2 f4 exf4 3 Nf3 d5'				'King''s Gambit Accepted, Abbazia Defense')
-		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Nc3'			'King''s Gambit Accepted 3')
-		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Bc4 Bg7'	'King''s Gambit Accepted 4')
-		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 h4'			'King''s Gambit Accepted 5')
-	)! !
+		#('1 e4 e5 2 f4' 'C30 King''s Gambit Declined') 
+		#('1 e4 e5 2 f4 d5' 'C31 King''s Gambit Declined, Falkbeer Counter Gambit') 
+		#('1 e4 e5 2 f4 d5 3 exd5 e4 4 d3 Nf6' 'C32 King''s Gambit Declined, Falkbeer Counter Gambit') 
+		#('1 e4 e5 2 f4 exf4' 'C33 King''s Gambit Accepted') 
+		#('1 e4 e5 2 f4 exf4 3 Nf3' 'C34 King''s Gambit Accepted') 
+		#('1 e4 e5 2 f4 exf4 3 Nf3 Be7' 'C35 King''s Gambit Accepted, Cunningham') 
+		#('1 e4 e5 2 f4 exf4 3 Nf3 d5' 'C36 King''s Gambit Accepted, Abbazia Defense') 
+		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Nc3' 'C37 King''s Gambit Accepted') 
+		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Bc4 Bg7' 'C38 King''s Gambit Accepted') 
+		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 h4' 'C39 King''s Gambit Accepted')
+		)! !
 
 !OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 10:52:06'!
 kingsIndian
@@ -990,6 +1003,58 @@ open
 									Theme current workspace 
 	or, use a Color class method"
 ! !
+
+!ConvertECO methodsFor: 'file I/O' stamp: 'dhn 9/16/2018 14:03:45'!
+convert: aName
+	"Convert a file named aName to simple database form"
+	| col input ios x y opening moves |
+
+	col _ OrderedCollection new.
+	input _ aName asFileEntry fileContents.
+	ios _ ReadStream on: input.
+	[(x _ ios nextLine) notNil]
+		whileTrue: [
+			y _ x indexOf: Character tab ifAbsent: [0].
+			opening _ String streamContents: [:str |
+				str
+					nextPutAll: (x copyFrom: 1 to: y - 1);
+					nextPut: $ ;
+					nextPutAll: (x copyFrom: y + 1 to: x size)].
+			(moves _ ios nextLine)
+				ifNotNil: [col add: {moves. opening}]].
+	^ col! !
+
+!ConvertECO methodsFor: 'accessing' stamp: 'dhn 9/16/2018 11:53:18'!
+inName
+	"Answer the value of inName"
+
+	^ inName! !
+
+!ConvertECO methodsFor: 'accessing' stamp: 'dhn 9/16/2018 11:53:18'!
+inName: anObject
+	"Set the value of inName"
+
+	inName _ anObject! !
+
+!ConvertECO methodsFor: 'accessing' stamp: 'dhn 9/16/2018 11:53:18'!
+outName
+	"Answer the value of outName"
+
+	^ outName! !
+
+!ConvertECO methodsFor: 'accessing' stamp: 'dhn 9/16/2018 11:53:18'!
+outName: anObject
+	"Set the value of outName"
+
+	outName _ anObject! !
+
+!ConvertECO class methodsFor: 'fileIn/Out' stamp: 'dhn 9/16/2018 12:14:45'!
+from: aName
+	"Convert a file named aName to simple database form"
+	| obj |
+	
+	obj _ self basicNew.
+	^ obj convert: aName! !
 
 !Count methodsFor: 'display' stamp: 'dhn 7/23/2018 15:44:23'!
 printString
