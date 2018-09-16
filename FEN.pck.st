@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 6:27:35 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 15 September 2018 at 9:22:01 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 78!
+!provides: 'FEN' 1 79!
 SystemOrganization addCategory: #FEN!
 
 
@@ -357,13 +357,16 @@ pieceTemplate
 		yourself
 ! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/14/2018 20:07:59'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 21:16:59'!
 initialize
 	"Establish the Chess Openings database"
 	
 	simple _ OrderedCollection new.
 	simple 
 		addAll: self kingsGambit;
+		addAll: self reti;
+		addAll: self kingsIndian;
+		addAll: self nimzoIndian;
 		addAll: self queensGambit;
 		addAll: self sicilian;
 		addAll: self ruyLopez.
@@ -386,6 +389,99 @@ kingsGambit
 		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Nc3'			'King''s Gambit Accepted 3')
 		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Bc4 Bg7'	'King''s Gambit Accepted 4')
 		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 h4'			'King''s Gambit Accepted 5')
+	)! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 20:29:17'!
+kingsIndian
+	"Answer the King's Indian openings"
+	
+	^ #(
+		#('1 d4 Nf6 2 c4 g6'									'King''s Indian Defense')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3'									'King''s Indian')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3'									'King''s Indian, Fianchetto')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 Nc6 7 O-O a6'							'King''s Indian, Fianchetto, Panno Variation')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 c5'							'King''s Indian, Fianchetto, Yugoslav System')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 c5 7 O-O'							'King''s Indian, Fianchetto, Yugoslav, 7.O-O')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 c5 7 O-O Nc6 8 d5'							'King''s Indian, Fianchetto, Yugoslav Panno')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 Nbd7'							'King''s Indian, Fianchetto')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 Nbd7 7 O-O e5 8 e4'					'King''s Indian, Fianchetto, Classical Variation, 8.e4')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 Nbd7 7 O-O e5 8 e4 c6 9 h3'		'King''s Indian, Fianchetto, Classical Main line')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4'		'King''s Indian 2')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 h3'		'King''s Indian, Makagonov System (5.h3)')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 g3'		'King''s Indian 3')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Be2'		'King''s Indian 4')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Be2 O-O 6 Bg5 c5'		'King''s Indian, Averbakh, 6...c5')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Be2 O-O 6 Bg5 c5 7 d5 e6'		'King''s Indian, Averbakh, Main line')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f4'		'King''s Indian, Four Pawns Attack')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f4 O-O 6 Be2'		'King''s Indian 5')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f4 O-O 6 Be2 c5 7 Nf3'		'King''s Indian, Four Pawns Attack, with Be2 and Nf3')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f4 O-O 6 Be2 c5 7 Nf3 cxd4 8 Nxd4 Nc6 9 Be3'		'King''s Indian, Four Pawns Attack, Main line')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3'		'King''s Indian, Samisch Variation')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O'		'King''s Indian, Samisch')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 b6'		'King''s Indian, Samisch, double Fianchetto Variation')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 Nc6'		'King''s Indian, Samisch 2')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 Nc6 7 Nge2 a6 8 Qd2 Rb8'		'King''s Indian, Samisch, Panno Main line')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 e5'		'King''s Indian, Samisch, Orthodox Variation')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 e5 7 Nge2 c6'		'King''s Indian, Samisch, Orthodox, 7.Nge2 c6')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 e5 7 d5'		'King''s Indian, Samisch, Orthodox')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 e5 7 d5 c6'		'King''s Indian, Samisch, Orthodox, 7.d5 c6')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 e5 7 d5 c6 8 Nge2 cxd5'		'King''s Indian, Samisch, Orthodox Main line')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3'		'King''s Indian 6')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2'		'King''s Indian 7')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5'		'King''s Indian 8')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 d5 Nbd7'		'King''s Indian, Petrosian System')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O'		'King''s Indian, Orthodox')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nbd7 8 Re1'		'King''s Indian, Orthodox, 7...Nbd7, 8.Re1')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nbd7 8 Re1 c6 9 Bf1 a5'		'King''s Indian, Orthodox, 7...Nbd7, Main line')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nc6'		'King''s Indian 9')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nc6 8 d5 Ne7 9 Ne1'		'King''s Indian, Orthodox, Taimanov, 9.Ne1')
+		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nc6 8 d5 Ne7 9 Ne1 Nd7 10 f3 f5'		'King''s Indian, Orthodox, Taimanov')
+	)! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 21:16:17'!
+nimzoIndian
+	"Answer the Nimzo Indian openings"
+	
+	^ #(
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4'									'Nimzo-Indian')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Nf3'									'Nimzo-Indian, Three Knights')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qb3'									'Nimzo-Indian, Spielmann Variation')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qb3 c5 5 dxc5 Nc6'									'Nimzo-Indian, Spielmann')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3'									'Nimzo-Indian, Samisch')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3 c5 6 f3 d5 7 cxd5'									'Nimzo-Indian, Samisch 2')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3 c5 6 e3'									'Nimzo-Indian, Samisch 3')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3 O-O'									'Nimzo-Indian, Samisch Variation')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3 O-O 6 e3'									'Nimzo-Indian, Samisch Variation 2')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3 O-O 6 e3 c5 7 Bd3 Nc6'									'Nimzo-Indian, Samisch 4')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Bg5'									'Nimzo-Indian, Leningrad')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Bg5 h6 5 Bh4 c5 6 d5 d6'									'Nimzo-Indian, Leningrad, Main line')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2'									'Nimzo-Indian, Classical')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 Nc6'									'Nimzo-Indian, Classical 2')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 d5'									'Nimzo-Indian, Classical, Noa Variation')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 d5 5 cxd5 exd5'									'Nimzo-Indian, Classical, Noa Variation, 5.cd ed')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 d5 5 a3'									'Nimzo-Indian, Classical 3')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 d5 5 a3 Bxc3+ 6 Qxc3 Ne4 7 Qc2'									'Nimzo-Indian, Classical 4')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 c5'									'Nimzo-Indian, Classical, 4...c5')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 c5 5 dxc5 O-O'									'Nimzo-Indian, Classical, Pirc Variation')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3'									'Nimzo-Indian, Classical, 4.e3')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 c5'									'Nimzo-Indian')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 c5 5 Ne2'									'Nimzo-Indian, 4.e3 c5, 5.Ne2 (Rubinstein)')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 b6'									'Nimzo-Indian, Fischer Variation')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 b6 5 Ne2'									'Nimzo-Indian, Fischer Variation, 5.Ne2')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 b6 5 Ne2 Ba6'									'Nimzo-Indian, 4.e3, Bronstein (Byrne) Variation')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O'									'Nimzo-Indian 2')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Bd3'									'Nimzo-Indian, 4.e3 O-O 5.Bd3')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Bd3 d5'									'Nimzo-Indian, 4.e3 O-O 5.Bd3 d5')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3'									'Nimzo-Indian, 4.e3 O-O 5.Nf3, without ...d5')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5'									'Nimzo-Indian, 4.e3')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 b6'									'Nimzo-Indian, 4.e3, Main line with ...b6')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5'									'Nimzo-Indian, 4.e3 2')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O dxc4 8 Bxc4'							'Nimzo-Indian, 4.e3, Gligoric System')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O dxc4 8 Bxc4 Nbd7'		'Nimzo-Indian, 4.e3, Gligoric System, Bronstein Variation')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O Nc6'		'Nimzo-Indian, 4.e3, Main line with 7...Nc6')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O Nc6 8 a3 dxc4 9 Bxc4'		'Nimzo-Indian, 4.e3, Main line with 8...dc and 9...cd')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O Nc6 8 a3 Bxc3 9 bxc3'		'Nimzo-Indian, 4.e3, Main line with 8...Bxc3')
+		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O Nc6 8 a3 Bxc3 9 bxc3 dxc4 10 Bxc4'		'Nimzo-Indian, 4.e3, Main line')
 	)! !
 
 !OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 18:15:00'!
@@ -461,6 +557,19 @@ queensGambit
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3'		'Queen''s Gambit Declined, Orthodox Defense, Bd3 line')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4 9 Bxc4 Nd5'		'Queen''s Gambit Declined, Orthodox Defense, Bd3 line 2')
 		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4'		'Queen''s Gambit Declined, Orthodox Defense, Classical')
+	)! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 18:45:37'!
+reti
+	"Answer the Reti openings"
+	
+	^ #(
+		#('1 Nf3'									'Reti Opening')
+		#('1 Nf3 Nf6'								'Reti Opening 2')
+		#('1 Nf3 d5'								'Reti Opening 3')
+		#('1 Nf3 d5 2 g3'						'King''s Indian Attack')
+		#('1 Nf3 d5 2 g3 c5 3 Bg2'				'King''s Indian Attack 2')
+		#('1 Nf3 d5 2 c4'						'Reti Opening 4')
 	)! !
 
 !OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 18:10:06'!
