@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 16 September 2018 at 10:58:05 am'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 16 September 2018 at 11:40:22 am'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 80!
+!provides: 'FEN' 1 81!
 SystemOrganization addCategory: #FEN!
 
 
@@ -357,7 +357,43 @@ pieceTemplate
 		yourself
 ! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 21:16:59'!
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 11:38:06'!
+english
+	"Answer the English openings"
+	
+	^ #(
+		#('1 c4'																	'English')
+		#('1 c4 c6'																'English, Caro-Kann Defensive System')
+		#('1 c4 c6 2 Nf3 d5 3 b3'												'English with b3')
+		#('1 c4 e6'																'English 2')
+		#('1 c4 e6 2 Nf3 d5 3 g3 Nf6 4 Bg2 Be7 5 O-O'						'English 3')
+		#('1 c4 Nf6'																'English 4')
+		#('1 c4 Nf6 2 Nc3'														'English 5')
+		#('1 c4 Nf6 2 Nc3 e6'													'English 6')
+		#('1 c4 Nf6 2 Nc3 e6 3 e4'												'English, Mikenas-Carls, Sicilian Variation')
+		#('1 c4 e5'																'English 7')
+		#('1 c4 e5 2 Nc3'														'English 8')
+		#('1 c4 e5 2 Nc3 Nf6'													'English 9')
+		#('1 c4 e5 2 Nc3 Nf6 3 g3 c6'											'English, Bremen System, Keres Variation')
+		#('1 c4 e5 2 Nc3 Nf6 3 g3 g6'											'English, Bremen System with ...g6')
+		#('1 c4 e5 2 Nc3 Nc6'													'English 10')
+		#('1 c4 e5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 d3 d6'					'English 11')
+		#('1 c4 e5 2 Nc3 Nc6 3 Nf3'											'English, Three Knights System')
+		#('1 c4 e5 2 Nc3 Nc6 3 Nf3 Nf6'										'English 12')
+		#('1 c4 e5 2 Nc3 Nc6 3 Nf3 Nf6 4 g3'									'English, Four Knights, Kingside Fianchetto')
+		#('1 c4 c5'																'English, Symmetrical')
+		#('1 c4 c5 2 Nf3 Nf6 3 d4'												'English, Symmetrical, Benoni Formation')
+		#('1 c4 c5 2 Nf3 Nf6 3 d4 cxd4 4 Nxd4 e6'							'English, Symmetrical Variation')
+		#('1 c4 c5 2 Nf3 Nf6 3 d4 cxd4 4 Nxd4 e6 5 Nc3 Nc6'				'English, Symmetrical 2')
+		#('1 c4 c5 2 Nc3'														'English, Symmetrical 3')
+		#('1 c4 c5 2 Nc3 Nc6'													'English, Symmetrical 4')
+		#('1 c4 c5 2 Nc3 Nc6 3 g3'												'English 13')
+		#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3'						'English, Symmetrical 5')
+		#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3 Nf6'				'English, Symmetrical 6')
+		#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3 Nf6 6 O-O O-O 7 d4'		'English, Symmetrical, Main line with d4')
+	)! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 11:38:59'!
 initialize
 	"Establish the Chess Openings database"
 	
@@ -367,6 +403,7 @@ initialize
 		addAll: self reti;
 		addAll: self kingsIndian;
 		addAll: self nimzoIndian;
+		addAll: self english;
 		addAll: self queensGambit;
 		addAll: self sicilian;
 		addAll: self ruyLopez.
