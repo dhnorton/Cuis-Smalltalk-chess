@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 16 September 2018 at 8:47:06 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 16 September 2018 at 9:19:12 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 85!
+!provides: 'FEN' 1 86!
 SystemOrganization addCategory: #FEN!
 
 
@@ -16,7 +16,7 @@ Board class
 
 !classDefinition: #OpeningModel category: #FEN!
 ActiveModel subclass: #OpeningModel
-	instanceVariableNames: 'listCollection openingsIndex selectedOpening query simple'
+	instanceVariableNames: 'listCollection openingsIndex selectedOpening'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'FEN'!
@@ -370,8 +370,15 @@ pieceTemplate
 		yourself
 ! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 15:24:04'!
-allECO
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 21:11:10'!
+initialize
+	"Establish the list of Chess Openings"
+	
+	listCollection _ OrderedCollection new.
+	self simple do: [:ea | listCollection add: ea second]! !
+
+!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 21:05:20'!
+simple
 	"Answer all ECO openings"
 	
 	^ #(
@@ -865,383 +872,6 @@ allECO
 	#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nc6 8 d5 Ne7 9 Ne1' 'E98 King''s Indian, Orthodox, Taimanov, 9.Ne1') 	#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nc6 8 d5 Ne7 9 Ne1 Nd7 10 f3 f5' 'E99 King''s Indian, Orthodox, Taimanov')
 	)! !
 
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 13:53:40'!
-english
-	"Answer the English openings"
-	
-	^ #(
-	#('1 c4' 'A10 English') 
-	#('1 c4 c6' 'A11 English, Caro-Kann Defensive System') 
-	#('1 c4 c6 2 Nf3 d5 3 b3' 'A12 English with b3') 
-	#('1 c4 e6' 'A13 English') 
-	#('1 c4 e6 2 Nf3 d5 3 g3 Nf6 4 Bg2 Be7 5 O-O' 'A14 English') 
-	#('1 c4 Nf6' 'A15 English') #('1 c4 Nf6 2 Nc3' 'A16 English') 
-	#('1 c4 Nf6 2 Nc3 e6' 'A17 English') 
-	#('1 c4 Nf6 2 Nc3 e6 3 e4' 'A18 English, Mikenas-Carls') 
-	#('1 c4 Nf6 2 Nc3 e6 3 e4 c5' 'A19 English, Mikenas-Carls, Sicilian Variation') 
-	#('1 c4 e5' 'A20 English') 
-	#('1 c4 e5 2 Nc3' 'A21 English') 
-	#('1 c4 e5 2 Nc3 Nf6' 'A22 English') 
-	#('1 c4 e5 2 Nc3 Nf6 3 g3 c6' 'A23 English, Bremen System, Keres Variation') 
-	#('1 c4 e5 2 Nc3 Nf6 3 g3 g6' 'A24 English, Bremen System with ...g6') 
-	#('1 c4 e5 2 Nc3 Nc6' 'A25 English') 
-	#('1 c4 e5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 d3 d6' 'A26 English') 
-	#('1 c4 e5 2 Nc3 Nc6 3 Nf3' 'A27 English, Three Knights System') 
-	#('1 c4 e5 2 Nc3 Nc6 3 Nf3 Nf6' 'A28 English') 
-	#('1 c4 e5 2 Nc3 Nc6 3 Nf3 Nf6 4 g3' 'A29 English, Four Knights, Kingside Fianchetto') 
-	#('1 c4 c5' 'A30 English, Symmetrical') 
-	#('1 c4 c5 2 Nf3 Nf6 3 d4' 'A31 English, Symmetrical, Benoni Formation') 
-	#('1 c4 c5 2 Nf3 Nf6 3 d4 cxd4 4 Nxd4 e6' 'A32 English, Symmetrical Variation') 
-	#('1 c4 c5 2 Nf3 Nf6 3 d4 cxd4 4 Nxd4 e6 5 Nc3 Nc6' 'A33 English, Symmetrical') 
-	#('1 c4 c5 2 Nc3' 'A34 English, Symmetrical') 
-	#('1 c4 c5 2 Nc3 Nc6' 'A35 English, Symmetrical') 
-	#('1 c4 c5 2 Nc3 Nc6 3 g3' 'A36 English') 
-	#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3' 'A37 English, Symmetrical') 
-	#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3 Nf6' 'A38 English, Symmetrical') 
-	#('1 c4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 Nf3 Nf6 6 O-O O-O 7 d4' 'A39 English, Symmetrical, Main line with d4')
-	)! !
-
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 15:25:25'!
-initialize
-	"Establish the Chess Openings database"
-	
-	simple _ OrderedCollection new.
-	simple addAll: self allECO.
-
-	listCollection _ OrderedCollection new.
-	simple do: [:ea | listCollection add: ea second]! !
-
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 14:06:01'!
-kingsGambit
-	"Answer the King's Gambit openings"
-	
-	^ #(
-		#('1 e4 e5 2 f4' 'C30 King''s Gambit Declined') 
-		#('1 e4 e5 2 f4 d5' 'C31 King''s Gambit Declined, Falkbeer Counter Gambit') 
-		#('1 e4 e5 2 f4 d5 3 exd5 e4 4 d3 Nf6' 'C32 King''s Gambit Declined, Falkbeer Counter Gambit') 
-		#('1 e4 e5 2 f4 exf4' 'C33 King''s Gambit Accepted') 
-		#('1 e4 e5 2 f4 exf4 3 Nf3' 'C34 King''s Gambit Accepted') 
-		#('1 e4 e5 2 f4 exf4 3 Nf3 Be7' 'C35 King''s Gambit Accepted, Cunningham') 
-		#('1 e4 e5 2 f4 exf4 3 Nf3 d5' 'C36 King''s Gambit Accepted, Abbazia Defense') 
-		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Nc3' 'C37 King''s Gambit Accepted') 
-		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 Bc4 Bg7' 'C38 King''s Gambit Accepted') 
-		#('1 e4 e5 2 f4 exf4 3 Nf3 g5 4 h4' 'C39 King''s Gambit Accepted')
-		)! !
-
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 10:52:06'!
-kingsIndian
-	"Answer the King's Indian openings"
-	
-	^ #(
-		#('1 d4 Nf6 2 c4 g6'																		'King''s Indian Defense')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3'																	'King''s Indian')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3'											'King''s Indian, Fianchetto')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 Nc6 7 O-O a6'				'King''s Indian, Fianchetto, Panno Variation')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 c5'							'King''s Indian, Fianchetto, Yugoslav System')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 c5 7 O-O'					'King''s Indian, Fianchetto, Yugoslav, 7.O-O')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 c5 7 O-O Nc6 8 d5'		'King''s Indian, Fianchetto, Yugoslav Panno')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 Nbd7'						'King''s Indian, Fianchetto 2')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 Nbd7 7 O-O e5 8 e4'		'King''s Indian, Fianchetto, Classical Variation, 8.e4')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 Nf3 d6 5 g3 O-O 6 Bg2 Nbd7 7 O-O e5 8 e4 c6 9 h3'	'King''s Indian, Fianchetto, Classical Main line')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4'														'King''s Indian 2')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 h3'											'King''s Indian, Makagonov System (5.h3)')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 g3'											'King''s Indian 3')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Be2'											'King''s Indian 4')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Be2 O-O 6 Bg5 c5'							'King''s Indian, Averbakh, 6...c5')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Be2 O-O 6 Bg5 c5 7 d5 e6'				'King''s Indian, Averbakh, Main line')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f4'											'King''s Indian, Four Pawns Attack')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f4 O-O 6 Be2'								'King''s Indian 5')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f4 O-O 6 Be2 c5 7 Nf3'					'King''s Indian, Four Pawns Attack, with Be2 and Nf3')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f4 O-O 6 Be2 c5 7 Nf3 cxd4 8 Nxd4 Nc6 9 Be3'	'King''s Indian, Four Pawns Attack, Main line')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3'											'King''s Indian, Samisch Variation')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O'										'King''s Indian, Samisch')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 b6'							'King''s Indian, Samisch, double Fianchetto Variation')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 Nc6'							'King''s Indian, Samisch 2')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 Nc6 7 Nge2 a6 8 Qd2 Rb8'	'King''s Indian, Samisch, Panno Main line')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 e5'							'King''s Indian, Samisch, Orthodox Variation')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 e5 7 Nge2 c6'				'King''s Indian, Samisch, Orthodox, 7.Nge2 c6')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 e5 7 d5'						'King''s Indian, Samisch, Orthodox')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 e5 7 d5 c6'					'King''s Indian, Samisch, Orthodox, 7.d5 c6')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 f3 O-O 6 Be3 e5 7 d5 c6 8 Nge2 cxd5'	'King''s Indian, Samisch, Orthodox Main line')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3'											'King''s Indian 6')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2'								'King''s Indian 7')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5'							'King''s Indian 8')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 d5 Nbd7'				'King''s Indian, Petrosian System')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O'					'King''s Indian, Orthodox')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nbd7 8 Re1'	'King''s Indian, Orthodox, 7...Nbd7, 8.Re1')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nbd7 8 Re1 c6 9 Bf1 a5'		'King''s Indian, Orthodox, 7...Nbd7, Main line')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nc6'				'King''s Indian 9')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nc6 8 d5 Ne7 9 Ne1'		'King''s Indian, Orthodox, Taimanov, 9.Ne1')
-		#('1 d4 Nf6 2 c4 g6 3 Nc3 Bg7 4 e4 d6 5 Nf3 O-O 6 Be2 e5 7 O-O Nc6 8 d5 Ne7 9 Ne1 Nd7 10 f3 f5'		'King''s Indian, Orthodox, Taimanov')
-	)! !
-
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 10:54:48'!
-nimzoIndian
-	"Answer the Nimzo Indian openings"
-	
-	^ #(
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4'																		'Nimzo-Indian')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Nf3'																'Nimzo-Indian, Three Knights')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qb3'																'Nimzo-Indian, Spielmann Variation')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qb3 c5 5 dxc5 Nc6'												'Nimzo-Indian, Spielmann')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3'													'Nimzo-Indian, Samisch')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3 c5 6 f3 d5 7 cxd5'							'Nimzo-Indian, Samisch 2')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3 c5 6 e3'										'Nimzo-Indian, Samisch 3')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3 O-O'											'Nimzo-Indian, Samisch Variation')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3 O-O 6 e3'										'Nimzo-Indian, Samisch Variation 2')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 a3 Bxc3+ 5 bxc3 O-O 6 e3 c5 7 Bd3 Nc6'						'Nimzo-Indian, Samisch 4')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Bg5'																'Nimzo-Indian, Leningrad')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Bg5 h6 5 Bh4 c5 6 d5 d6'										'Nimzo-Indian, Leningrad, Main line')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2'																'Nimzo-Indian, Classical')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 Nc6'															'Nimzo-Indian, Classical 2')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 d5'															'Nimzo-Indian, Classical, Noa Variation')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 d5 5 cxd5 exd5'												'Nimzo-Indian, Classical, Noa Variation, 5.cd ed')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 d5 5 a3'														'Nimzo-Indian, Classical 3')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 d5 5 a3 Bxc3+ 6 Qxc3 Ne4 7 Qc2'						'Nimzo-Indian, Classical 4')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 c5'															'Nimzo-Indian, Classical, 4...c5')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 Qc2 c5 5 dxc5 O-O'												'Nimzo-Indian, Classical, Pirc Variation')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3'																	'Nimzo-Indian, Classical, 4.e3')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 c5'																'Nimzo-Indian')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 c5 5 Ne2'														'Nimzo-Indian, 4.e3 c5, 5.Ne2 (Rubinstein)')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 b6'																'Nimzo-Indian, Fischer Variation')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 b6 5 Ne2'														'Nimzo-Indian, Fischer Variation, 5.Ne2')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 b6 5 Ne2 Ba6'													'Nimzo-Indian, 4.e3, Bronstein (Byrne) Variation')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O'															'Nimzo-Indian 2')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Bd3'													'Nimzo-Indian, 4.e3 O-O 5.Bd3')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Bd3 d5'													'Nimzo-Indian, 4.e3 O-O 5.Bd3 d5')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3'														'Nimzo-Indian, 4.e3 O-O 5.Nf3, without ...d5')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5'													'Nimzo-Indian, 4.e3')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 b6'										'Nimzo-Indian, 4.e3, Main line with ...b6')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5'										'Nimzo-Indian, 4.e3 2')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O dxc4 8 Bxc4'				'Nimzo-Indian, 4.e3, Gligoric System')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O dxc4 8 Bxc4 Nbd7'		'Nimzo-Indian, 4.e3, Gligoric System, Bronstein Variation')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O Nc6'		'Nimzo-Indian, 4.e3, Main line with 7...Nc6')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O Nc6 8 a3 dxc4 9 Bxc4'	'Nimzo-Indian, 4.e3, Main line with 8...dc and 9...cd')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O Nc6 8 a3 Bxc3 9 bxc3'	'Nimzo-Indian, 4.e3, Main line with 8...Bxc3')
-		#('1 d4 Nf6 2 c4 e6 3 Nc3 Bb4 4 e3 O-O 5 Nf3 d5 6 Bd3 c5 7 O-O Nc6 8 a3 Bxc3 9 bxc3 dxc4 10 Bxc4'	'Nimzo-Indian, 4.e3, Main line')
-	)! !
-
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 18:15:00'!
-queensGambit
-	"Answer the Queen's Gambit openings"
-	
-	^ #(
-		#('1 d4 d5'													'Queen''s Pawn Game')
-		#('1 d4 d5 2 Nc3 Nf6 3 Bg5'								'Richter-Veresov Attack')
-		#('1 d4 d5 2 Nf3'											'Queen''s Pawn Game 2')
-		#('1 d4 d5 2 Nf3 Nf6 3 Bg5'								'Torre Attack (Tartakower Variation)')
-		#('1 d4 d5 2 Nf3 Nf6 3 e3'									'Queen''s Pawn Game 3')
-		#('1 d4 d5 2 Nf3 Nf6 3 e3 e6'								'Queen''s Pawn Game 4')
-		#('1 d4 d5 2 c4'												'Queen''s Gambit Declined')
-		#('1 d4 d5 2 c4 Nc6'										'Queen''s Gambit Declined, Chigorin Defense')
-		#('1 d4 d5 2 c4 e5'											'Queen''s Gambit Declined, Albin Counter Gambit')
-		#('1 d4 d5 2 c4 e5 3 dxe5 d4 4 Nf3 Nc6 5 g3'			'Queen''s Gambit Declined, Albin Counter Gambit, 5.g3')
-		#('1 d4 d5 2 c4 c6'											'Queen''s Gambit Declined Slav')
-		#('1 d4 d5 2 c4 c6 3 Nf3'									'Queen''s Gambit Declined Slav 2')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 e3 Bf5'					'Queen''s Gambit Declined Slav 3')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 cxd5 cxd5'				'Queen''s Gambit Declined Slav, Exchange Variation')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 cxd5 cxd5 5 Nc3 Nc6 6 Bf4 Bf5'	'Queen''s Gambit Declined Slav, Exchange Variation 2')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3'						'Queen''s Gambit Declined Slav 4')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3 dxc4 5 a4'			'Queen''s Gambit Declined Slav 5')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3 dxc4 5 a4 Bf5'		'Queen''s Gambit Declined Slav 6')
-		#('1 d4 d5 2 c4 c6 3 Nf3 Nf6 4 Nc3 dxc4 5 a4 Bf5 6 e3 e6 7 Bxc4 Bb4 8 O-O O-O 9 Qe2'		'Queen''s Gambit Declined Slav, Dutch 2')
-		#('1 d4 d5 2 c4 dxc4'										'Queen''s Gambit Accepted')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3'								'Queen''s Gambit Accepted 2')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 a6 4 e3 Bg4 5 Bxc4 e6 6 d5'		'Queen''s Gambit Accepted 3')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6'							'Queen''s Gambit Accepted 4')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 Nc3'					'Queen''s Gambit Accepted 5')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3'						'Queen''s Gambit Accepted 6')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6'					'Queen''s Gambit Accepted 7')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6'		'Queen''s Gambit Accepted, Classical')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6 7 Qe2'		'Queen''s Gambit Accepted, Classical 2')
-		#('1 d4 d5 2 c4 dxc4 3 Nf3 Nf6 4 e3 e6 5 Bxc4 c5 6 O-O a6 7 Qe2 b5 8 Bb3 Bb7'		'Queen''s Gambit Accepted, Classical 3')
-		#('1 d4 d5 2 c4 e6'											'Queen''s Gambit Declined 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3'									'Queen''s Gambit Declined 3')
-		#('1 d4 d5 2 c4 e6 3 Nc3 c5'								'Queen''s Gambit Declined, Tarrasch')
-		#('1 d4 d5 2 c4 e6 3 Nc3 c5 4 cxd5 exd5 5 Nf3 Nc6 6 g3'		'Queen''s Gambit Declined, Tarrasch 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 c5 4 cxd5 exd5 5 Nf3 Nc6 6 g3 Nf6 7 Bg2 Be7'		'Queen''s Gambit Declined, Tarrasch 3')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6'								'Queen''s Gambit Declined 4')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 cxd5 exd5 5 Bg5 c6 6 Qc2'		'Queen''s Gambit Declined, Exchange, Positional line, 6.Qc2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3'						'Queen''s Gambit Declined 5')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 Bb4'					'Queen''s Gambit Declined, Ragozin Variation')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 Bb4 5 Bg5 dxc4'	'Queen''s Gambit Declined, Ragozin, Vienna Variation')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5'					'Queen''s Gambit Declined, Semi-Tarrasch')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5 5 cxd5'			'Queen''s Gambit Declined, Semi-Tarrasch 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c5 5 cxd5 Nxd5 6 e3 Nc6 7 Bd3'		'Queen''s Gambit Declined, Semi-Tarrasch, 7.Bd3')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6'					'Queen''s Gambit Declined, Semi-Slav')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 Bg5 dxc4'	'Queen''s Gambit Declined, Semi-Slav 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3'			'Queen''s Gambit Declined, Semi-Slav 3')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3'		'Queen''s Gambit Declined, Semi-Slav 4')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3 dxc4 7 Bxc4'		'Queen''s Gambit Declined, Semi-Slav 5')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3 dxc4 7 Bxc4 b5 8 Bd3 a6'		'Queen''s Gambit Declined, Meran')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Nf3 c6 5 e3 Nbd7 6 Bd3 dxc4 7 Bxc4 b5 8 Bd3 a6 9 e4 c5 10 e5 cxd4 11 Nxb5'		'Queen''s Gambit Declined, Meran 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5'						'Queen''s Gambit Declined 6')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Nbd7'				'Queen''s Gambit Declined 7')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Nbd7 5 e3 c6 6 Nf3'		'Queen''s Gambit Declined 8')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7'				'Queen''s Gambit Declined 9')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Rc1'		'Queen''s Gambit Declined, Anti-Neo-Orthodox Variation')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3'		'Queen''s Gambit Declined 10')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 h6 7 Bh4'		'Queen''s Gambit Declined 11')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 h6 7 Bh4 Ne4 8 Bxe7 Qxe7'		'Queen''s Gambit Declined, Lasker Defense')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 h6 7 Bh4 b6'		'Queen''s Gambit Declined, Tartakower (Makagonov-Bondarevsky) System')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 h6 7 Bh4 b6 8 cxd5 Nxd5'		'Queen''s Gambit Declined, Tartakower')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7'		'Queen''s Gambit Declined, Orthodox Defense')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Qc2'		'Queen''s Gambit Declined, Orthodox, Rubinstein Attack')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Qc2 c5 8 cxd5'		'Queen''s Gambit Declined, Orthodox, Rubinstein Attack 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1'		'Queen''s Gambit Declined, Orthodox Defense 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Qc2'		'Queen''s Gambit Declined, Orthodox, Rubinstein Attack 3')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Qc2 a6 9 cxd5'		'Queen''s Gambit Declined, Orthodox, Rubinstein Attack, Main line')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3'		'Queen''s Gambit Declined, Orthodox Defense, Bd3 line')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4 9 Bxc4 Nd5'		'Queen''s Gambit Declined, Orthodox Defense, Bd3 line 2')
-		#('1 d4 d5 2 c4 e6 3 Nc3 Nf6 4 Bg5 Be7 5 e3 O-O 6 Nf3 Nbd7 7 Rc1 c6 8 Bd3 dxc4'		'Queen''s Gambit Declined, Orthodox Defense, Classical')
-	)! !
-
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/16/2018 14:18:08'!
-reti
-	"Answer the Reti openings"
-	
-	^ #(
-		#('1 Nf3' 'A04 Reti Opening') 
-		#('1 Nf3 Nf6' 'A05 Reti Opening') 
-		#('1 Nf3 d5' 'A06 Reti Opening') 
-		#('1 Nf3 d5 2 g3' 'A07 King''s Indian Attack') 
-		#('1 Nf3 d5 2 g3 c5 3 Bg2' 'A08 King''s Indian Attack') 
-		#('1 Nf3 d5 2 c4' 'A09 Reti Opening')
-		)! !
-
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/15/2018 18:10:06'!
-ruyLopez
-	"Answer the Ruy Lopez openings"
-	
-	^ #(
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5'														'Ruy Lopez, Spanish Defense')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 d6'													'Ruy Lopez, Old Steinitz Defense')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 f5'													'Ruy Lopez, Schliemann Defense')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Bc5'													'Ruy Lopez, Classical')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Nf6'													'Ruy Lopez, Berlin Defense')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Nf6 4 O-O d6'										'Ruy Lopez 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 Nf6 4 O-O Nxe4'									'Ruy Lopez 3')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Bxc6'											'Ruy Lopez, Exchange')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Bxc6 dc 5 O-O f6'							'Ruy Lopez, Exchange, Gligoric Variation')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4'											'Ruy Lopez 4')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6'										'Ruy Lopez 5')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 O-O'									'Ruy Lopez, Modern Steinitz Defense, 5.O-O')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 Bxc6+ bxc6 6 d4'					'Ruy Lopez, Modern Steinitz Defense')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3'									'Ruy Lopez, Modern Steinitz Defense 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3 Bd7'								'Ruy Lopez, Modern Steinitz Defense 3')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 d6 5 c3 Bd7 6 d4 g6'					'Ruy Lopez, Modern Steinitz Defense, Fianchetto Variation')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6'										'Ruy Lopez 6')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O'								'Ruy Lopez 7')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O d6'							'Ruy Lopez, Steinitz Defense Deferred')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4'							'Ruy Lopez, Open')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6 9 Qe2'		'Ruy Lopez, Open, Howell Attack')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6 9 c3'		'Ruy Lopez, Open')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Nxe4 6 d4 b5 7 Bb3 d5 8 dxe5 Be6'				'Ruy Lopez, Open 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7'							'Ruy Lopez, Closed')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Bxc6 dxc6'			'Ruy Lopez, Exchange Variation Doubly Deferred (DERLD)')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Qe2'					'Ruy Lopez, Worrall Attack')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 d6'				'Ruy Lopez 8')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3'		'Ruy Lopez 9')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d5'	'Ruy Lopez, Marshall')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6'	'Ruy Lopez, Closed')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 d4'	'Ruy Lopez, Closed 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3'	'Ruy Lopez, Closed 3')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 h6'	'Ruy Lopez, Smyslov Defense')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Nb8'		'Ruy Lopez, Breyer Defense')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Nb8 10 d4'		'Ruy Lopez, Closed, Breyer')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2'	'Ruy Lopez, Closed 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7'	'Ruy Lopez, Closed, Chigorin')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7 12 Nbd2 Nc6'	'Ruy Lopez, Closed, Chigorin 2')
-		#('1 e4 e5 2 Nf3 Nc6 3 Bb5 a6 4 Ba4 Nf6 5 O-O Be7 6 Re1 b5 7 Bb3 O-O 8 c3 d6 9 h3 Na5 10 Bc2 c5 11 d4 Qc7 12 Nbd2 cxd4 13 cxd4'		'Ruy Lopez, Closed, Chigorin, 12...cd')
-	)! !
-
-!OpeningModel methodsFor: 'initialization' stamp: 'dhn 9/12/2018 17:11:05'!
-sicilian
-	"Answer the Sicilian openings"
-	
-	^ #(
-		#('1 e4 c5'																'Sicilian')
-		#('1 e4 c5 2 f4'															'Sicilian, 2.f4')
-		#('1 e4 c5 2 d4'															'Sicilian, 2.d4')
-		#('1 e4 c5 2 c3'															'Sicilian, Alapin')
-		#('1 e4 c5 2 Nc3'														'Sicilian, Closed')
-		#('1 e4 c5 2 Nc3 Nc6 3 g3'												'Sicilian, Closed 2')
-		#('1 e4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 d3 d6'					'Sicilian, Closed 3')
-		#('1 e4 c5 2 Nc3 Nc6 3 g3 g6 4 Bg2 Bg7 5 d3 d6 6 Be3'			'Sicilian, Closed, 6.Be3')
-		#('1 e4 c5 2 Nf3'														'Sicilian 2')
-		#('1 e4 c5 2 Nf3 a6'														'Sicilian, O''Kelly Variation')
-		#('1 e4 c5 2 Nf3 Nf6'													'Sicilian, Nimzovich-Rubinstein')
-		#('1 e4 c5 2 Nf3 Nc6'													'Sicilian 3')
-		#('1 e4 c5 2 Nf3 Nc6 3 Bb5 g6'										'Sicilian, Rossolimo Variation')
-		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 e5'							'Sicilian 4')
-		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4'								'Sicilian 5')
-		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 Nxc6'					'Sicilian, Accelerated Fianchetto')
-		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 Nc3 Bg7 6 Be3 Nf6 7 Bc4'		'Sicilian, Accelerated Fianchetto, Modern Variation with Bc4')
-		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 c4'					'Sicilian, Accelerated Fianchetto 2')
-		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 c4 Bg7'				'Sicilian, Accelerated Fianchetto 3')
-		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 c4 Bg7 6 Be3'		'Sicilian, Accelerated Fianchetto, Maroczy Bind, 6.Be3')
-		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 g6 5 c4 Bg7 6 Be3 Nf6 7 Nc3 Ng4'		'Sicilian, Accelerated Fianchetto, Breyer Variation')
-		#('1 e4 c5 2 Nf3 e6'													'Sicilian 6')
-		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 a6'							'Sicilian, Kan')
-		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 a6 5 Bd3'					'Sicilian, Kan 2')
-		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 a6 5 Nc3'					'Sicilian, Kan, 5.Nc3')
-		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6'							'Sicilian 7')
-		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6 5 Nc3'					'Sicilian, Taimanov')
-		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6 5 Nc3 a6'				'Sicilian, Taimanov Variation')
-		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6 5 Nc3 Qc7'				'Sicilian, Taimanov (Bastrikov)  Variation')
-		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6 5 Nc3 Qc7 6 Be3'		'Sicilian, Taimanov  Variation 2')
-		#('1 e4 c5 2 Nf3 e6 3 d4 cxd4 4 Nxd4 Nc6 5 Nc3 Qc7 6 Be3 a6 7 Be2'		'Sicilian, Taimanov  Variation 3')
-		#('1 e4 c5 2 Nf3 d6'													'Sicilian 8')
-		#('1 e4 c5 2 Nf3 d6 3 Bb5+'											'Sicilian, Canal-Sokolsky (Rossolimo) Attack')
-		#('1 e4 c5 2 Nf3 d6 3 Bb5+ Bd7'										'Sicilian, Canal-Sokolsky (Rossolimo) Attack 2')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Qxd4'								'Sicilian 9')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4'								'Sicilian 10')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 f3 e5 6 Bb5+'		'Sicilian, Prins Variation, Venice Attack')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3'					'Sicilian 11')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bc4'		'Sicilian 12')
-		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 d6 6 Be2'		'Sicilian 13')
-		#('1 e4 c5 2 Nf3 Nc6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 d6 6 Be2 e5 7 Nb3'		'Sicilian, Boleslavsky Variation, 7.Nb3')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5'		'Sicilian, Richter-Rauzer')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 Bd7 7 Qd2'		'Sicilian, Richter-Rauzer, Larsen Variation, 7.Qd2')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6'	'Sicilian, Richter-Rauzer 2')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2'		'Sicilian, Richter-Rauzer Attack')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 Be7 8 O-O-O O-O 9 f4'		'Sicilian, Richter-Rauzer Attack 2')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 Be7 8 O-O-O O-O 9 f4 Nxd4 10 Qxd4'		'Sicilian, Richter-Rauzer Attack, 7...Be7 Defense, 9...Nxd4')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 a6'		'Sicilian, Richter-Rauzer Attack, 7...a6')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 a6 8 O-O-O Bd7'		'Sicilian, Richter-Rauzer Attack, 7...a6 Defense, 8...Bd7')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 a6 8 O-O-O Bd7 9 f4 Be7'		'Sicilian, Richter-Rauzer Attack, 7...a6 Defense, 9...Be7')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 Nc6 6 Bg5 e6 7 Qd2 a6 8 O-O-O Bd7 9 f4 Be7 10 Nf3 b5 11 Bxf6'		'Sicilian, Richter-Rauzer Attack, 7...a6 Defense, 11.Bxf6')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6'				'Sicilian, Dragon Variation')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 f4'			'Sicilian, Levenfish Variation')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3'		'Sicilian, Dragon')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 Be2 Nc6 8 O-O'		'Sicilian, Dragon, Classical')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 Be2 Nc6 8 O-O O-O 9 Nb3'		'Sicilian, Dragon, Classical 2')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 f3'		'Sicilian, Dragon, Yugoslav Attack')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 f3 O-O'		'Sicilian, Dragon, Yugoslav Attack 2')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 f3 O-O 8 Qd2 Nc6 9 Bc4'		'Sicilian, Dragon, Yugoslav Attack 3')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 f3 O-O 8 Qd2 Nc6 9 Bc4 Bd7 10 O-O-O'		'Sicilian, Dragon, Yugoslav Attack, 10.castle long')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 g6 6 Be3 Bg7 7 f3 O-O 8 Qd2 Nc6 9 Bc4 Bd7 10 O-O-O Qa5 11 Bb3 Rfc8 12 h4'		'Sicilian, Dragon, Yugoslav Attack, 12.h4')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6'				'Sicilian, Scheveningen')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 g4'			'Sicilian, Scheveningen, Keres Attack')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 f4'			'Sicilian, Scheveningen 2')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Be2'		'Sicilian 14')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Be2 a6'	'Sicilian, Scheveningen 3')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Be2 a6 7 O-O Qc7 8 f4 Nc6'		'Sicilian, Scheveningen, Classical')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Bc4'		'Sicilian, Fischer-Sozin Attack')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Bc4 a6 7 Bb3 b5'		'Sicilian, Fischer-Sozin with ...a6 and ...b5')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Bc4 Nc6'	'Sicilian, Fischer-Sozin Attack 2')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 e6 6 Bc4 Nc6 7 Be3'		'Sicilian, Najdorf')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 g3'			'Sicilian, Najdorf, Zagreb (Fianchetto) Variation')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Be2'		'Sicilian, Najdorf, Opocensky Variation')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 f4'			'Sicilian, Najdorf, 6.f4')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5'		'Sicilian, Najdorf 2')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6'	'Sicilian, Najdorf, 6...e6')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4'		'Sicilian, Najdorf 3')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Qb6'		'Sicilian, Najdorf 4')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Be7'		'Sicilian, Najdorf 5')
-		#('1 e4 c5 2 Nf3 d6 3 d4 cxd4 4 Nxd4 Nf6 5 Nc3 a6 6 Bg5 e6 7 f4 Be7 8 Qf3 Qc7 9 O-O-O Nbd7'		'Sicilian, Najdorf, 7...Be7 Main line')
-	)! !
-
 !OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/14/2018 18:24:29'!
 listCollection
 	"Answer the value of listCollection"
@@ -1254,30 +884,23 @@ selectedOpening
 
 	^ selectedOpening! !
 
-!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/14/2018 20:00:46'!
-simple
-	"Answer the value of simple"
-
-	^ simple! !
-
 !OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 14:54:30'!
 openings
 	"Answer the names of chess openings"
 
 	^ listCollection! !
 
-!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 20:18:31'!
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/16/2018 21:15:49'!
 openingsFor: aString
 	"Search for openings which begin with aString"
 	
 	listCollection _ OrderedCollection new.
-	query _ aString.
-		simple do: [:ea | | ky |
-			ea first size >= query size
-				ifTrue: [
-					ky _ ea first copyFrom: 1 to: query size.
-					ky = query
-						ifTrue: [listCollection add: ea second]]].
+	self simple do: [:ea | | ky |
+		ea first size >= aString size
+			ifTrue: [
+				ky _ ea first copyFrom: 1 to: aString size.
+				ky = aString
+					ifTrue: [listCollection add: ea second]]].
 	self openingsIndex: 0.
 	self triggerEvent: #search! !
 
@@ -1297,12 +920,12 @@ openingsIndex: anObject
 		ifTrue: [self selectedOpening: anObject].
 	self triggerEvent: #openingChange! !
 
-!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/14/2018 20:19:56'!
+!OpeningModel methodsFor: 'operating' stamp: 'dhn 9/16/2018 21:12:33'!
 reset
 	"Rest the receiver to its original state"
 	
 	listCollection _ OrderedCollection new.
-	simple do: [:ea | listCollection add: ea second].
+	self simple do: [:ea | listCollection add: ea second].
 	self openingsIndex: 0.
 	self triggerEvent: #search! !
 
@@ -1459,7 +1082,7 @@ search
 
 	model openingsFor: searchString text asString! !
 
-!OpeningView class methodsFor: 'instance creation' stamp: 'dhn 9/14/2018 20:56:04'!
+!OpeningView class methodsFor: 'instance creation' stamp: 'dhn 9/16/2018 21:10:02'!
 open
 "	Answer an instance of this class.
 	To start from a Browser or a WorkSpace, do (cmd-d) the following:
@@ -1471,7 +1094,7 @@ open
 	win _ (self
 		open: (mod _ OpeningModel new) "an instance of the model"
 		label: 'Chess Openings') 	"the initial title; can be changed later with #setLabel: "
-			setWindowColor:  Theme current transcript. 	"the initial color of the window title bar and frame; other choices below"	
+			setWindowColor:  Theme current browser. 	"the initial color of the window title bar and frame; other choices below"	
 	"#open:label: sends #buildMorphicWindow to the instance of this class, to allow customization of the view"
 
 	mod when: #openingChange send: #newText to: win.
