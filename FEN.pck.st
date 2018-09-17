@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 16 September 2018 at 3:29:40 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 16 September 2018 at 8:47:06 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 84!
+!provides: 'FEN' 1 85!
 SystemOrganization addCategory: #FEN!
 
 
@@ -1412,7 +1412,14 @@ changeList
 
 	listPane updateList! !
 
-!OpeningView methodsFor: 'updating' stamp: 'dhn 9/15/2018 15:06:37'!
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/16/2018 20:44:34'!
+formSearch
+	"Copy the textPane contents into the search field and do the search"
+	
+	searchString model actualContents: textPane model actualContents asString.
+	self search! !
+
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/16/2018 20:42:00'!
 listMenu
 	"Show the popup menu"	
 	| aMenu |
@@ -1421,7 +1428,8 @@ listMenu
 	model openingsIndex > 0
 		ifTrue: [
 			aMenu
-				add: 'Write a *.pgn file'		action: #writePgn
+				add: 'Search on these moves'		action: #formSearch;
+				add: 'Write a *.pgn file'				action: #writePgn
 				].
 	^ aMenu! !
 
