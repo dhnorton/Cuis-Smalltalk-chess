@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 16 September 2018 at 9:19:12 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 18 September 2018 at 6:12:19 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 86!
+!provides: 'FEN' 1 88!
 SystemOrganization addCategory: #FEN!
 
 
@@ -878,6 +878,12 @@ listCollection
 
 	^ listCollection! !
 
+!OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/18/2018 12:22:33'!
+listCollection: anObject
+	"Set the value of listCollection"
+
+	listCollection _ anObject! !
+
 !OpeningModel methodsFor: 'accessing' stamp: 'dhn 9/12/2018 17:30:46'!
 selectedOpening
 	"Answer the value of selectedOpening"
@@ -1035,6 +1041,32 @@ changeList
 
 	listPane updateList! !
 
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/18/2018 18:06:24'!
+findWord
+	"Find occurrences of a string in the list of names"
+	| arg col |
+	
+	arg _ (FillInTheBlankMorph 
+	request: 'Search string?'
+	initialAnswer: ''
+	centerAt: Display center
+	onCancelReturn: ''
+	acceptOnCR: true).
+	arg 
+		ifNotEmpty: [ | str ix y |
+			col _ OrderedCollection new.
+			str _ model listCollection.
+			1 to: str size do: [:n |
+				y _ str at: n.
+				ix _ y findString: arg startingAt: 1 caseSensitive: false.
+				ix > 0
+					ifTrue: [col add: (str at: n)]].
+			model 
+				openingsIndex: 0;
+				listCollection: col.
+			self changeList.
+			listPane activateWindow]! !
+
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/16/2018 20:44:34'!
 formSearch
 	"Copy the textPane contents into the search field and do the search"
@@ -1042,7 +1074,7 @@ formSearch
 	searchString model actualContents: textPane model actualContents asString.
 	self search! !
 
-!OpeningView methodsFor: 'updating' stamp: 'dhn 9/16/2018 20:42:00'!
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/18/2018 16:06:15'!
 listMenu
 	"Show the popup menu"	
 	| aMenu |
@@ -1052,8 +1084,11 @@ listMenu
 		ifTrue: [
 			aMenu
 				add: 'Search on these moves'		action: #formSearch;
-				add: 'Write a *.pgn file'				action: #writePgn
-				].
+				add: 'List search string...'			action: #findWord;
+				add: 'Write a *.pgn file'				action: #writePgn]
+		ifFalse: [
+			aMenu
+				add: 'List search string...'			action: #findWord].
 	^ aMenu! !
 
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/15/2018 12:58:12'!
