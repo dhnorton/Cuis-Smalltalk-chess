@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 18 September 2018 at 6:12:19 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 18 September 2018 at 6:47:31 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 88!
+!provides: 'FEN' 1 89!
 SystemOrganization addCategory: #FEN!
 
 
@@ -1041,7 +1041,7 @@ changeList
 
 	listPane updateList! !
 
-!OpeningView methodsFor: 'updating' stamp: 'dhn 9/18/2018 18:06:24'!
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/18/2018 18:21:54'!
 findWord
 	"Find occurrences of a string in the list of names"
 	| arg col |
@@ -1064,8 +1064,7 @@ findWord
 			model 
 				openingsIndex: 0;
 				listCollection: col.
-			self changeList.
-			listPane activateWindow]! !
+			self changeList]! !
 
 !OpeningView methodsFor: 'updating' stamp: 'dhn 9/16/2018 20:44:34'!
 formSearch
