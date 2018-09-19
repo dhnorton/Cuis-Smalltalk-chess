@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 18 September 2018 at 6:47:31 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 19 September 2018 at 2:36:40 pm'!
 'Description Utilities for studying chess.'!
-!provides: 'FEN' 1 89!
+!provides: 'FEN' 1 90!
 SystemOrganization addCategory: #FEN!
 
 
@@ -1013,7 +1013,7 @@ buildMorphicWindow
 		addAdjusterAndMorph: textPane layoutSpec: (LayoutSpec proportionalWidth: 0.4)
 ! !
 
-!OpeningView methodsFor: 'fileout' stamp: 'dhn 9/15/2018 18:22:29'!
+!OpeningView methodsFor: 'fileout' stamp: 'dhn 9/19/2018 14:35:44'!
 writePgn
 	"Write a *.pgn file"
 	| arg outFile lines |
@@ -1021,7 +1021,7 @@ writePgn
 	arg _ (FillInTheBlankMorph 
 		request: 'Base name for *.pgn file?'
 		initialAnswer: ''
-		centerAt: Display center
+		centerAt: self runningWorld activeHand morphPosition
 		onCancelReturn: ''
 		acceptOnCR: true).
 	arg 
@@ -1041,7 +1041,7 @@ changeList
 
 	listPane updateList! !
 
-!OpeningView methodsFor: 'updating' stamp: 'dhn 9/18/2018 18:21:54'!
+!OpeningView methodsFor: 'updating' stamp: 'dhn 9/19/2018 14:35:00'!
 findWord
 	"Find occurrences of a string in the list of names"
 	| arg col |
@@ -1049,18 +1049,18 @@ findWord
 	arg _ (FillInTheBlankMorph 
 	request: 'Search string?'
 	initialAnswer: ''
-	centerAt: Display center
+	centerAt: self runningWorld activeHand morphPosition
 	onCancelReturn: ''
 	acceptOnCR: true).
 	arg 
 		ifNotEmpty: [ | str ix y |
 			col _ OrderedCollection new.
-			str _ model listCollection.
+			str _ model simple.
 			1 to: str size do: [:n |
-				y _ str at: n.
+				y _ (str at: n) second.
 				ix _ y findString: arg startingAt: 1 caseSensitive: false.
 				ix > 0
-					ifTrue: [col add: (str at: n)]].
+					ifTrue: [col add: (str at: n) second]].
 			model 
 				openingsIndex: 0;
 				listCollection: col.
@@ -1213,7 +1213,7 @@ initialize
 	
 	tally _ 0! !
 
-!InFen methodsFor: 'I/O' stamp: 'dhn 6/23/2018 11:31:04'!
+!InFen methodsFor: 'I/O' stamp: 'dhn 9/19/2018 14:36:00'!
 baseName
 	"Answer the base name for output files"
 	| dot |
@@ -1222,7 +1222,7 @@ baseName
 	^ (FillInTheBlankMorph
 		request: 'Base name for output files?'
 		initialAnswer: (file copyFrom: 1 to: dot - 1)
-		centerAt: Display center
+		centerAt: self runningWorld activeHand morphPosition
 		onCancelReturn: ''
 		acceptOnCR: true)! !
 
