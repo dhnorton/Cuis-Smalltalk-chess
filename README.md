@@ -1,4 +1,4 @@
-# Cuis-Smalltalk-chess
+# WIP-chess
 
 Utility programs for the study of the game of Chess. Classes and their purposes are as follows:
 
